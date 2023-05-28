@@ -12,13 +12,19 @@ public static class ServiceCollectionExtensions
     #region Fields
     private static TypeFilter myFilter = new TypeFilter((typeObj, criteriaObj) =>
     {
-        if (typeObj.Name == criteriaObj.ToString())
+        if (criteriaObj is null)
+            return false;
+
+        var typeNames = (string[])criteriaObj;
+
+        if (typeNames.Contains(typeObj.Name))
             return true;
         else
             return false;
     });
 
-    private static Type commandHandlerInterfaceGenericType = typeof(ICommandHandler<>);
+    private static Type commandHandlerWithoutReturnTypeInterfaceGenericType = typeof(ICommandHandler<>);
+    private static Type commandHandlerWithReturnTypeInterfaceGenericType = typeof(ICommandHandler<,>);
     #endregion
 
     #region Extension Methods
@@ -27,7 +33,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICommandHandlerFactory, CommandHandlerFactory>();
         services.AddScoped<ICommandExecutor, CommandExecutor>();
 
-        foreach (var implementationType in GetCommandHandlerTypes())
+        var implementationTypes = GetCommandHandlerTypes();
+        foreach (var implementationType in implementationTypes)
         {
             var serviceType = GetCommandHandlerInterfaceType(implementationType);
 
@@ -47,8 +54,15 @@ public static class ServiceCollectionExtensions
             .Where(x =>
             {
                 if (x.IsInterface || x.IsAbstract) return false;
-                if (commandHandlerInterfaceGenericType.IsAssignableFrom(x)) return true;
-                if (x.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == commandHandlerInterfaceGenericType)) return true;
+                if (commandHandlerWithoutReturnTypeInterfaceGenericType.IsAssignableFrom(x)) return true;
+                if (commandHandlerWithReturnTypeInterfaceGenericType.IsAssignableFrom(x)) return true;
+                if (x.GetInterfaces().Any(i => 
+                    i.IsGenericType && (
+                        i.GetGenericTypeDefinition() == commandHandlerWithoutReturnTypeInterfaceGenericType ||
+                        i.GetGenericTypeDefinition() == commandHandlerWithReturnTypeInterfaceGenericType
+                        )
+                    )
+                ) return true;
                 return false;
             });
         return types;
@@ -56,7 +70,13 @@ public static class ServiceCollectionExtensions
 
     private static Type? GetCommandHandlerInterfaceType(Type commandHandlerType)
     {
-        return commandHandlerType.FindInterfaces(myFilter, commandHandlerInterfaceGenericType.Name).FirstOrDefault();
+        return commandHandlerType.FindInterfaces(
+            myFilter,
+            new string[] { 
+                commandHandlerWithoutReturnTypeInterfaceGenericType.Name,
+                commandHandlerWithReturnTypeInterfaceGenericType.Name
+            }
+            ).FirstOrDefault();
     }
     #endregion
 }
