@@ -11,9 +11,15 @@ public class CommandExecutor : ICommandExecutor
     {
         _commandHandlerFactory = commandHandlerFactory;
     }
-    public async Task<Result> ExecuteAsync<T>(T command) where T : ICommand
+    public async Task<Result> ExecuteAsync<TCommand>(TCommand command) where TCommand : ICommand
     {
-        var handler = _commandHandlerFactory.CreateHandler<T>();
+        var handler = _commandHandlerFactory.CreateHandler<TCommand>();
+        return await handler.ExecuteAsync(command);
+    }
+
+    public async Task<Result<TResult>> ExecuteAsync<TCommand, TResult>(TCommand command) where TCommand : ICommand<TResult>
+    {
+        var handler = _commandHandlerFactory.CreateHandler<TCommand, TResult>();
         return await handler.ExecuteAsync(command);
     }
 }

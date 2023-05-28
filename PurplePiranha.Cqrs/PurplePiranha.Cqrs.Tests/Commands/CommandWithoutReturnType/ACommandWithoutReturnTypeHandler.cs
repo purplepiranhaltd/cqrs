@@ -6,17 +6,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Tests
+namespace PurplePiranha.Cqrs.Tests.Commands.CommandWithoutReturnType
 {
     /// <summary>
     /// A command handler that takes a simple command. 
     /// Returns a successful result if both inputs are equal.
     /// Returns a validation error if either input is negative.
     /// </summary>
-    /// <seealso cref="PurplePiranha.Cqrs.Commands.ICommandHandler&lt;PurplePiranha.Cqrs.Tests.SimpleCommand&gt;" />
-    public class SimpleCommandHandler : ICommandHandler<SimpleCommand>
+    /// <seealso cref="ICommandHandler&lt;ACommandWithoutReturnType.SimpleCommand&gt;" />
+    public class ACommandWithoutReturnTypeHandler : ICommandHandler<ACommandWithoutReturnType>
     {
-        public async Task<Result> ExecuteAsync(SimpleCommand command)
+        public async Task<Result> ExecuteAsync(ACommandWithoutReturnType command)
         {
             var validationFailures = new List<string>();
 
@@ -32,7 +32,7 @@ namespace PurplePiranha.Cqrs.Tests
             if (command.A.Equals(command.B))
                 return await Task.FromResult(Result.SuccessResult());
 
-            return await Task.FromResult(Result.ErrorResult(SimpleCommandErrors.BothInputsMustBeEqual));
+            return await Task.FromResult(Result.ErrorResult(ACommandWithoutReturnTypeErrors.BothInputsMustBeEqual));
         }
     }
 }

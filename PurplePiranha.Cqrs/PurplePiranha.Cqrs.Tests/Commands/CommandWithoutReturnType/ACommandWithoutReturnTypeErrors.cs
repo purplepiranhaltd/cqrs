@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Tests
+namespace PurplePiranha.Cqrs.Tests.Commands.CommandWithoutReturnType
 {
-    public static class SimpleCommandErrors
+    public static class ACommandWithoutReturnTypeErrors
     {
         public static readonly Error BothInputsMustBeEqual = new Error(
             "Equality",

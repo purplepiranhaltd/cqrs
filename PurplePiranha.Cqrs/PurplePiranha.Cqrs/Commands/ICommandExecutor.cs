@@ -5,5 +5,6 @@ namespace PurplePiranha.Cqrs.Commands;
 
 public interface ICommandExecutor
 {
-    Task<Result> ExecuteAsync<T>(T command) where T : ICommand;
+    Task<Result> ExecuteAsync<TCommand>(TCommand command) where TCommand : ICommand;
+    Task<Result<TResult>> ExecuteAsync<TCommand, TResult>(TCommand command) where TCommand : ICommand<TResult>;
 }

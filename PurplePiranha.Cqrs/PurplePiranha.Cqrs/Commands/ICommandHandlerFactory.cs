@@ -1,6 +1,9 @@
-﻿namespace PurplePiranha.Cqrs.Commands;
+﻿using PurplePiranha.Cqrs.Results;
+
+namespace PurplePiranha.Cqrs.Commands;
 
 public interface ICommandHandlerFactory
 {
-    ICommandHandler<T> CreateHandler<T>() where T : ICommand;
+    ICommandHandler<TCommand> CreateHandler<TCommand>() where TCommand : ICommand;
+    ICommandHandler<TCommand, TResult> CreateHandler<TCommand, TResult>() where TCommand: ICommand<TResult>;
 }

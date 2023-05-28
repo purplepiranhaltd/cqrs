@@ -11,9 +11,23 @@ public class CommandHandlerFactory : ICommandHandlerFactory
         _serviceProvider = serviceProvider;
     }
 
-    public ICommandHandler<T> CreateHandler<T>() where T : ICommand
+    public ICommandHandler<TCommand> CreateHandler<TCommand>() where TCommand : ICommand
     {
-        var handler = _serviceProvider.GetService(typeof(ICommandHandler<T>));
-        return (ICommandHandler<T>)handler;
+        var handler = _serviceProvider.GetService(typeof(ICommandHandler<TCommand>));
+
+        if(handler is null)
+            return new NotImplementedCommandHandler<TCommand>();
+
+        return (ICommandHandler<TCommand>)handler;
+    }
+
+    public ICommandHandler<TCommand, TResult> CreateHandler<TCommand, TResult>() where TCommand : ICommand<TResult>
+    {
+        var handler = _serviceProvider.GetService(typeof(ICommandHandler<TCommand, TResult>));
+
+        if (handler is null)
+            return new NotImplementedCommandHandler<TCommand, TResult>();
+
+        return (ICommandHandler<TCommand, TResult>)handler;
     }
 }
