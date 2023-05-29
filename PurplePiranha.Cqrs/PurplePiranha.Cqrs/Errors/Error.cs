@@ -6,8 +6,6 @@ public class Error : IEquatable<Error>
 {
     public static readonly Error None = new(string.Empty, string.Empty);
     public static readonly Error NullValue = new($"{nameof(Error)}.{nameof(NullValue)}", "The specified result value is null.");
-    public static readonly Error CommandHandlerNotImplemented = new($"{nameof(Error)}.{nameof(CommandHandlerNotImplemented)}", "No command handler was found to process this command");
-    public static readonly Error QueryHandlerNotImplemented = new($"{nameof(Error)}.{nameof(QueryHandlerNotImplemented)}", "No command handler was found to process this command");
 
     public Error(string code, string message)
     {

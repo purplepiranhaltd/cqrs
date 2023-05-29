@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PurplePiranha.Cqrs.Exceptions;
+using System;
 
 namespace PurplePiranha.Cqrs.Commands;
 
@@ -15,8 +16,8 @@ public class CommandHandlerFactory : ICommandHandlerFactory
     {
         var handler = _serviceProvider.GetService(typeof(ICommandHandler<TCommand>));
 
-        if(handler is null)
-            return new NotImplementedCommandHandler<TCommand>();
+        if (handler is null)
+            throw new HandlerNotImplementedException($"Command handler '{nameof(TCommand)}' has not been implemented.");
 
         return (ICommandHandler<TCommand>)handler;
     }
@@ -26,7 +27,7 @@ public class CommandHandlerFactory : ICommandHandlerFactory
         var handler = _serviceProvider.GetService(typeof(ICommandHandler<TCommand, TResult>));
 
         if (handler is null)
-            return new NotImplementedCommandHandler<TCommand, TResult>();
+            throw new HandlerNotImplementedException($"Command handler '{nameof(TCommand)}' with result '{nameof(TResult)}' has not been implemented.");
 
         return (ICommandHandler<TCommand, TResult>)handler;
     }
