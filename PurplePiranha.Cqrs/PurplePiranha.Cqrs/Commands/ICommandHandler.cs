@@ -1,4 +1,4 @@
-﻿using PurplePiranha.Cqrs.Results;
+﻿using PurplePiranha.FluentResults.Results;
 using System.Threading.Tasks;
 
 namespace PurplePiranha.Cqrs.Commands;
