@@ -1,15 +1,9 @@
-﻿using PurplePiranha.Cqrs.Commands;
-using PurplePiranha.Cqrs.Results;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using PurplePiranha.FluentResults.Results;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Queries
+namespace PurplePiranha.Cqrs.Queries;
+
+public interface IQueryExecutor
 {
-    public interface IQueryExecutor
-    {
-        Task<Result<TResult>> ExecuteAsync<TResult>(IQuery<TResult> query);
-    }
+    Task<Result<TResult>> ExecuteAsync<TResult>(IQuery<TResult> query);
 }

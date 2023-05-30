@@ -1,7 +1,5 @@
-﻿using PurplePiranha.Cqrs.Errors;
-using PurplePiranha.Cqrs.Exceptions;
-using PurplePiranha.Cqrs.Queries;
-using PurplePiranha.Cqrs.Results;
+﻿using PurplePiranha.Cqrs.Exceptions;
+using PurplePiranha.FluentResults.Results;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
@@ -25,7 +23,7 @@ public class CommandExecutor : ICommandExecutor
             var handler = _commandHandlerFactory.CreateHandler<TCommand>();
             return await handler.ExecuteAsync(command);
         }
-        catch(HandlerNotImplementedException e)
+        catch(CommandHandlerNotImplementedException e)
         {
             return await Task.FromResult(Result.ErrorResult(CommandErrors.CommandHandlerNotImplemented));
         }
@@ -59,7 +57,7 @@ public class CommandExecutor : ICommandExecutor
             var handler = _commandHandlerFactory.CreateHandler<TCommand, TResult>();
             return await handler.ExecuteAsync(command);
         }
-        catch (HandlerNotImplementedException e)
+        catch (CommandHandlerNotImplementedException e)
         {
             return await Task.FromResult(Result.ErrorResult<TResult>(CommandErrors.CommandHandlerNotImplemented));
         }

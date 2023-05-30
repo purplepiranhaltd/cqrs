@@ -1,6 +1,4 @@
-﻿using PurplePiranha.Cqrs.Results;
-
-namespace PurplePiranha.Cqrs.Commands;
+﻿namespace PurplePiranha.Cqrs.Commands;
 
 public interface ICommandHandlerFactory
 {

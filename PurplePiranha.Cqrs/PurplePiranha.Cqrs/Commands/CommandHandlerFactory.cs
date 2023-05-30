@@ -17,7 +17,7 @@ public class CommandHandlerFactory : ICommandHandlerFactory
         var handler = _serviceProvider.GetService(typeof(ICommandHandler<TCommand>));
 
         if (handler is null)
-            throw new HandlerNotImplementedException($"Command handler '{nameof(TCommand)}' has not been implemented.");
+            throw CommandHandlerNotImplementedException.Create<TCommand>();
 
         return (ICommandHandler<TCommand>)handler;
     }
@@ -27,7 +27,7 @@ public class CommandHandlerFactory : ICommandHandlerFactory
         var handler = _serviceProvider.GetService(typeof(ICommandHandler<TCommand, TResult>));
 
         if (handler is null)
-            throw new HandlerNotImplementedException($"Command handler '{nameof(TCommand)}' with result '{nameof(TResult)}' has not been implemented.");
+            throw CommandHandlerNotImplementedException.Create<TCommand, TResult>();
 
         return (ICommandHandler<TCommand, TResult>)handler;
     }
