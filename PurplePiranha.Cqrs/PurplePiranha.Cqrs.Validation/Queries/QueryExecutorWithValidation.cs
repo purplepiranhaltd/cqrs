@@ -1,5 +1,6 @@
 ﻿using PurplePiranha.Cqrs.Commands;
 using PurplePiranha.Cqrs.Queries;
+using PurplePiranha.Cqrs.Validation.Validators;
 using PurplePiranha.FluentResults.Errors;
 using PurplePiranha.FluentResults.Results;
 using System.Reflection;
@@ -14,7 +15,7 @@ namespace PurplePiranha.Cqrs.Validation.Queries;
 public class QueryExecutorWithValidation : QueryExecutor
 {
     private readonly IQueryHandlerFactory _queryHandlerFactory;
-    private readonly IQueryValidationExecutor _queryValidatorExecutor;
+    private readonly IValidatorExecutor _queryValidatorExecutor;
 
 #nullable disable
     private static readonly MethodInfo ExecuteValidationAsyncMethod = 
@@ -25,7 +26,7 @@ public class QueryExecutorWithValidation : QueryExecutor
             );
 #nullable enable
 
-    public QueryExecutorWithValidation(IQueryHandlerFactory queryHandlerFactory, IQueryValidationExecutor queryValidatorExecutor) : base(queryHandlerFactory)
+    public QueryExecutorWithValidation(IQueryHandlerFactory queryHandlerFactory, IValidatorExecutor queryValidatorExecutor) : base(queryHandlerFactory)
     {
         _queryHandlerFactory = queryHandlerFactory;
         _queryValidatorExecutor = queryValidatorExecutor;
@@ -42,47 +43,28 @@ public class QueryExecutorWithValidation : QueryExecutor
     {
         Result<TResult> result = Result.ErrorResult<TResult>(Error.None);
 
-        var validationResult = (query is IValidatingQuery) ? await CallExecuteValidatorAsync<TQuery, TResult>(query) : Result.SuccessResult();
+        var validationResult = (query is IValidationRequired) ? await CallExecuteValidatorAsync<TQuery>(query) : Result.SuccessResult();
 
-        validationResult
-            .OnError(e =>
-            {
-                result = Result.ErrorResult<TResult>(e);
-            })
-            .OnValidationFailure(v =>
-            {
-                result = Result.ValidationFailureResult<TResult>(v);
-            })
-            .OnSuccess(async () =>
-            {
-                try
-                {
-                    var handler = _queryHandlerFactory.CreateHandler<TQuery, TResult>();
-                    result = await handler.ExecuteAsync(query);
-                }
-                catch (CommandHandlerNotImplementedException e)
-                {
-                    result = await Task.FromResult(Result.ErrorResult<TResult>(QueryErrors.QueryHandlerNotImplemented));
-                }
-            });
+        if (!validationResult.IsSuccess)
+            return validationResult.ToTypedResult<TResult>();
 
-        return result;
+        return await base.ExecuteQueryAsync<TQuery, TResult>(query);
     }
 
     /// <summary>
     /// Performs the validation.
     /// </summary>
     /// <typeparam name="TQuery">The type of the query.</typeparam>
-    /// <typeparam name="TResult">The type of the result.</typeparam>
     /// <param name="query">The query.</param>
     /// <returns></returns>
-    private async Task<Result> CallExecuteValidatorAsync<TQuery, TResult>(TQuery query) where TQuery : IQuery<TResult>
+    private async Task<Result> CallExecuteValidatorAsync<TQuery>(TQuery query)
     {
         // We make a dynamic call to the generic method via reflection,
         // otherwise the return type would have to be specified on every call
 
+#nullable disable
         var queryType = query.GetType();
-        var resultType = typeof(TResult);
+#nullable enable
 
         try
         {
@@ -112,7 +94,7 @@ public class QueryExecutorWithValidation : QueryExecutor
     /// <typeparam name="TQuery">The type of the query.</typeparam>
     /// <param name="query">The query.</param>
     /// <returns></returns>
-    protected virtual async Task<Result> ExecuteValidationAsync<TQuery>(TQuery query) where TQuery : IValidatingQuery
+    private async Task<Result> ExecuteValidationAsync<TQuery>(TQuery query) where TQuery : IValidationRequired
     {
         return await _queryValidatorExecutor.ExecuteAsync(query);
     }

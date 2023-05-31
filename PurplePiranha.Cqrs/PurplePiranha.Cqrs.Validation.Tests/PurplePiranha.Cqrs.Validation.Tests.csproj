@@ -19,10 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TestClasses\Commands\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\PurplePiranha.Cqrs.Validation\PurplePiranha.Cqrs.Validation.csproj" />
   </ItemGroup>
 

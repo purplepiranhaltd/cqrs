@@ -1,17 +1,17 @@
 ﻿using PurplePiranha.FluentResults.Results;
 
-namespace PurplePiranha.Cqrs.Validation.Queries;
+namespace PurplePiranha.Cqrs.Validation.Validators;
 
 /// <summary>
 /// Handles validation for a specific query type
 /// </summary>
-/// <typeparam name="TQuery">The type of the query.</typeparam>
-public interface IQueryValidationHandler<TQuery> where TQuery : IValidatingQuery
+/// <typeparam name="T">The type of the query.</typeparam>
+public interface IValidator<T> where T : IValidationRequired
 {
     /// <summary>
     /// Validates the query.
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns>Validation failures</returns>
-    Task<Result> ValidateAsync(TQuery query);
+    Task<Result> ValidateAsync(T query);
 }

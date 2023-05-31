@@ -1,9 +1,9 @@
-﻿using PurplePiranha.Cqrs.Validation.Queries;
+﻿using PurplePiranha.Cqrs.Validation.Validators;
 using PurplePiranha.FluentResults.Results;
 
 namespace PurplePiranha.Cqrs.Validation.Tests.TestClasses.Queries;
 
-public class TestValidatingQueryValidator : IQueryValidationHandler<TestValidatingQuery>
+public class TestValidatingQueryValidator : IValidator<TestValidatingQuery>
 {
     public async Task<Result> ValidateAsync(TestValidatingQuery query)
     {

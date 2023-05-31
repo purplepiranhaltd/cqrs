@@ -1,8 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using PurplePiranha.Cqrs.Commands;
 using PurplePiranha.Cqrs.Extensions;
 using PurplePiranha.Cqrs.Queries;
 using PurplePiranha.Cqrs.ServiceRegistration;
+using PurplePiranha.Cqrs.Validation.Commands;
 using PurplePiranha.Cqrs.Validation.Queries;
+using PurplePiranha.Cqrs.Validation.Validators;
 
 namespace PurplePiranha.Cqrs.Validation.Extensions;
 
@@ -14,9 +17,14 @@ public static class ServiceCollectionExtensions
     {
         services
             .AddCqrs()
-            .AddScoped<IQueryValidatorFactory, QueryValidatorFactory>()
-            .AddScoped<IQueryValidationExecutor, QueryValidatorExecutor>()
-            .AddScoped<IQueryExecutor, QueryExecutorWithValidation>() // override original
+
+            .AddScoped<IValidatorFactory, ValidatorFactory>()
+            .AddScoped<IValidatorExecutor, ValidatorExecutor>()
+
+            // override original QueryExecutor & CommandExecutor
+            .AddScoped<IQueryExecutor, QueryExecutorWithValidation>() 
+            .AddScoped<ICommandExecutor, CommandExecutorWithValidation>()
+
             .AddCqrsValidationHandlers();
 
         return services;
@@ -30,7 +38,7 @@ public static class ServiceCollectionExtensions
     {
         var handlerRegistrar = new HandlerRegistrar(new Type[]
         {
-        typeof(IQueryValidationHandler<>)
+        typeof(IValidator<>)
         });
 
         handlerRegistrar.RegisterHandlers(services);

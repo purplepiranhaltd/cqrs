@@ -33,7 +33,7 @@ public class CommandExecutor : ICommandExecutor
     /// <typeparam name="TCommand">The type of the command.</typeparam>
     /// <param name="command">The command.</param>
     /// <returns></returns>
-    public async Task<Result> ExecuteAsync<TCommand>(TCommand command) where TCommand : ICommand
+    public virtual async Task<Result> ExecuteAsync<TCommand>(TCommand command) where TCommand : ICommand
     {
         try
         {
@@ -89,7 +89,7 @@ public class CommandExecutor : ICommandExecutor
     /// <typeparam name="TResult">The type of the result.</typeparam>
     /// <param name="command">The command.</param>
     /// <returns></returns>
-    private async Task<Result<TResult>> ExecuteCommandAsync<TCommand, TResult>(TCommand command) where TCommand : ICommand<TResult>
+    protected virtual async Task<Result<TResult>> ExecuteCommandAsync<TCommand, TResult>(TCommand command) where TCommand : ICommand<TResult>
     {
         try
         {
