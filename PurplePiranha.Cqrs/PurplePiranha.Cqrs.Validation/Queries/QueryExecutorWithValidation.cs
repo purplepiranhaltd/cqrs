@@ -1,6 +1,5 @@
-﻿using PurplePiranha.Cqrs.Exceptions;
+﻿using PurplePiranha.Cqrs.Commands;
 using PurplePiranha.Cqrs.Queries;
-using PurplePiranha.Cqrs.Queries.Validation;
 using PurplePiranha.FluentResults.Errors;
 using PurplePiranha.FluentResults.Results;
 using System.Reflection;

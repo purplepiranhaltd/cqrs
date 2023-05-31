@@ -1,5 +1,4 @@
-﻿using PurplePiranha.Cqrs.Exceptions;
-using System;
+﻿using System;
 
 namespace PurplePiranha.Cqrs.Commands;
 

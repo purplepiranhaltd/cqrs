@@ -1,6 +1,6 @@
 ﻿using PurplePiranha.FluentResults.Results;
 
-namespace PurplePiranha.Cqrs.Queries.Validation;
+namespace PurplePiranha.Cqrs.Validation.Queries;
 
 public interface IQueryValidator<TQuery> where TQuery : IValidatingQuery
 {

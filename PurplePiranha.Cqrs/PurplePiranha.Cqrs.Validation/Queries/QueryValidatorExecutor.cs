@@ -1,8 +1,8 @@
 ﻿using PurplePiranha.Cqrs.Commands;
-using PurplePiranha.Cqrs.Exceptions;
+using PurplePiranha.Cqrs.Queries;
 using PurplePiranha.FluentResults.Results;
 
-namespace PurplePiranha.Cqrs.Queries.Validation;
+namespace PurplePiranha.Cqrs.Validation.Queries;
 
 public class QueryValidatorExecutor : IQueryValidatorExecutor
 {
@@ -29,6 +29,6 @@ public class QueryValidatorExecutor : IQueryValidatorExecutor
 
     public async Task<Result> ExecuteAsync<TQuery, TResult>(TQuery query) where TQuery : IValidatingQuery, IQuery<TResult>
     {
-        return await ExecuteAsync<TQuery>(query);
+        return await ExecuteAsync(query);
     }
 }

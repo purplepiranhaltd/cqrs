@@ -6,6 +6,9 @@ using System.Reflection;
 
 namespace PurplePiranha.Cqrs.ServiceRegistration;
 
+/// <summary>
+/// Registers handlers with the service collection
+/// </summary>
 public class HandlerRegistrar
 {
     private readonly Type[] _handlerTypes;
@@ -15,6 +18,10 @@ public class HandlerRegistrar
         _handlerTypes = handlerTypes;
     }
 
+    /// <summary>
+    /// Registers the handlers with the service collection.
+    /// </summary>
+    /// <param name="services">The services.</param>
     public void RegisterHandlers(IServiceCollection services)
     {
         var implementationTypes = GetCommandHandlerTypes();
@@ -27,6 +34,10 @@ public class HandlerRegistrar
         }
     }
 
+    /// <summary>
+    /// Gets the command handler types implementation types.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerable<Type> GetCommandHandlerTypes()
     {
         var types = AppDomain.CurrentDomain.GetAssemblies()
@@ -48,6 +59,11 @@ public class HandlerRegistrar
         return types;
     }
 
+    /// <summary>
+    /// Gets the type of the command handler service interface for a specified implementation type.
+    /// </summary>
+    /// <param name="commandHandlerType">Command handler implementation type</param>
+    /// <returns>Command handler service interface type</returns>
     private Type? GetCommandHandlerInterfaceType(Type commandHandlerType)
     {
         return commandHandlerType.FindInterfaces(filter, _handlerTypes).FirstOrDefault();

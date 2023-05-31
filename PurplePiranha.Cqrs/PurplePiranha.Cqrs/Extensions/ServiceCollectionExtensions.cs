@@ -10,6 +10,11 @@ public static class ServiceCollectionExtensions
 {
     #region Extension Methods
 
+    /// <summary>
+    /// Adds the CQRS services to the service collection.
+    /// </summary>
+    /// <param name="services">The services.</param>
+    /// <returns></returns>
     public static IServiceCollection AddCqrs(this IServiceCollection services)
     {
         services.AddScoped<ICommandHandlerFactory, CommandHandlerFactory>();
@@ -26,6 +31,11 @@ public static class ServiceCollectionExtensions
 
     #region Helpers
 
+    /// <summary>
+    /// Adds the CQRS handlers to the service collection.
+    /// </summary>
+    /// <param name="services">The services.</param>
+    /// <returns></returns>
     private static IServiceCollection AddCqrsHandlers(this IServiceCollection services)
     {
         var handlerRegistrar = new HandlerRegistrar(new Type[]

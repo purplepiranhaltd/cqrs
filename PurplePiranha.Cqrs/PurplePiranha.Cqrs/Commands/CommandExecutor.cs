@@ -1,5 +1,4 @@
-﻿using PurplePiranha.Cqrs.Exceptions;
-using PurplePiranha.FluentResults.Results;
+﻿using PurplePiranha.FluentResults.Results;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
@@ -7,7 +6,7 @@ using System.Threading.Tasks;
 namespace PurplePiranha.Cqrs.Commands;
 
 /// <summary>
-/// Performs the function of executing a command via its correct handler.
+/// Executes a command via the correct handler.
 /// </summary>
 /// <seealso cref="PurplePiranha.Cqrs.Commands.ICommandExecutor" />
 public class CommandExecutor : ICommandExecutor

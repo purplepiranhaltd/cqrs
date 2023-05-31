@@ -1,4 +1,4 @@
-﻿namespace PurplePiranha.Cqrs.Queries.Validation;
+﻿namespace PurplePiranha.Cqrs.Validation.Queries;
 
 public interface IQueryValidatorFactory
 {

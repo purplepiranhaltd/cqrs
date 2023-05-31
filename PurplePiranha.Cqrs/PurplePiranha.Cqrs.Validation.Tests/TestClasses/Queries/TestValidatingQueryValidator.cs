@@ -1,4 +1,4 @@
-﻿using PurplePiranha.Cqrs.Queries.Validation;
+﻿using PurplePiranha.Cqrs.Validation.Queries;
 using PurplePiranha.FluentResults.Results;
 
 namespace PurplePiranha.Cqrs.Validation.Tests.TestClasses.Queries;

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using PurplePiranha.Cqrs.Exceptions;
 using PurplePiranha.Cqrs.Extensions;
 using PurplePiranha.Cqrs.Queries;
 using PurplePiranha.Cqrs.Tests.TestClasses.Queries;

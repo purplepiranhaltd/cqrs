@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PurplePiranha.Cqrs.Extensions;
 using PurplePiranha.Cqrs.Queries;
-using PurplePiranha.Cqrs.Queries.Validation;
 using PurplePiranha.Cqrs.ServiceRegistration;
 using PurplePiranha.Cqrs.Validation.Queries;
 

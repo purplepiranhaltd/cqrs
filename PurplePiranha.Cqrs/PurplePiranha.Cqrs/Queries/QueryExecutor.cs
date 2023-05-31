@@ -1,4 +1,4 @@
-﻿using PurplePiranha.Cqrs.Exceptions;
+﻿using PurplePiranha.Cqrs.Commands;
 using PurplePiranha.FluentResults.Results;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
@@ -6,36 +6,53 @@ using System.Threading.Tasks;
 
 namespace PurplePiranha.Cqrs.Queries;
 
+/// <summary>
+/// Executes a query via the correct handler.
+/// </summary>
+/// <seealso cref="PurplePiranha.Cqrs.Queries.IQueryExecutor" />
 public class QueryExecutor : IQueryExecutor
 {
     private readonly IQueryHandlerFactory _queryHandlerFactory;
 
-    //private readonly IQueryValidatorExecutor _queryValidatorExecutor;
-    private static readonly MethodInfo _executeAsyncMethod = typeof(QueryExecutor).GetMethod(nameof(ExecuteQueryAsync), BindingFlags.NonPublic | BindingFlags.Instance);
+#nullable disable
+    private static MethodInfo ExecuteQueryAsyncMethod => 
+        typeof(QueryExecutor)
+            .GetMethod(
+                nameof(ExecuteQueryAsync), 
+                BindingFlags.NonPublic | BindingFlags.Instance
+            );
+#nullable enable
 
-    public QueryExecutor(IQueryHandlerFactory queryHandlerFactory)//, IQueryValidatorExecutor queryValidatorExecutor)
+    public QueryExecutor(IQueryHandlerFactory queryHandlerFactory)
     {
         _queryHandlerFactory = queryHandlerFactory;
-        //_queryValidatorExecutor = queryValidatorExecutor;
     }
 
     public async Task<Result<TResult>> ExecuteAsync<TResult>(IQuery<TResult> query)
     {
-        Result<TResult> result;
+        var queryType = query.GetType();
+        var resultType = typeof(TResult);
 
-        if (query == null) return default;
         try
         {
-            var queryType = query.GetType();
-            var resultType = typeof(TResult);
-            result = await (Task<Result<TResult>>)_executeAsyncMethod.MakeGenericMethod(queryType, resultType).Invoke(this, new object[] { query });
+            var method = ExecuteQueryAsyncMethod.MakeGenericMethod(queryType, resultType);
+
+#nullable disable
+            return await (Task<Result<TResult>>)method.Invoke(this, new object[] { query });
+#nullable enable
+
         }
         catch (TargetInvocationException ex)
         {
-            result = HandleException<TResult>(ex);
-        }
+            if (ex.InnerException is null)
+                throw;
 
-        return result;
+            var info = ExceptionDispatchInfo.Capture(ex.InnerException);
+            info.Throw();
+
+            // compiler requires assignment - an exception is always thrown so we can never get here
+            return default;
+        }
     }
 
     protected virtual async Task<Result<TResult>> ExecuteQueryAsync<TQuery, TResult>(TQuery query) where TQuery : IQuery<TResult>
@@ -50,14 +67,5 @@ public class QueryExecutor : IQueryExecutor
         {
             return await Task.FromResult(Result.ErrorResult<TResult>(QueryErrors.QueryHandlerNotImplemented));
         }
-    }
-
-    private TResult HandleException<TResult>(TargetInvocationException ex)
-    {
-        var info = ExceptionDispatchInfo.Capture(ex.InnerException);
-        info.Throw();
-
-        // compiler requires assignment
-        return default;
     }
 }

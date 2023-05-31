@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PurplePiranha.Cqrs.Exceptions;
+namespace PurplePiranha.Cqrs.Commands;
 
 public class CommandHandlerNotImplementedException : Exception
 {

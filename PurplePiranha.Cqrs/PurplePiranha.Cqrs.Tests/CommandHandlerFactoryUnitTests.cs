@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using PurplePiranha.Cqrs.Commands;
-using PurplePiranha.Cqrs.Exceptions;
 using PurplePiranha.Cqrs.Extensions;
 using PurplePiranha.Cqrs.Tests.TestClasses.Commands;
 

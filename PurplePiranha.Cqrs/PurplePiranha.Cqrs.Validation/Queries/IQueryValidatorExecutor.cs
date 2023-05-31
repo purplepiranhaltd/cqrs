@@ -1,6 +1,7 @@
-﻿using PurplePiranha.FluentResults.Results;
+﻿using PurplePiranha.Cqrs.Queries;
+using PurplePiranha.FluentResults.Results;
 
-namespace PurplePiranha.Cqrs.Queries.Validation;
+namespace PurplePiranha.Cqrs.Validation.Queries;
 
 public interface IQueryValidatorExecutor
 {

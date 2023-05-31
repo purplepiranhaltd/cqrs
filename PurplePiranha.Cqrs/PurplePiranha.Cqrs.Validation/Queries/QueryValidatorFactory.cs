@@ -1,6 +1,6 @@
-﻿using PurplePiranha.Cqrs.Exceptions;
+﻿using PurplePiranha.Cqrs.Validation.Exceptions;
 
-namespace PurplePiranha.Cqrs.Queries.Validation;
+namespace PurplePiranha.Cqrs.Validation.Queries;
 
 public class QueryValidatorFactory : IQueryValidatorFactory
 {
