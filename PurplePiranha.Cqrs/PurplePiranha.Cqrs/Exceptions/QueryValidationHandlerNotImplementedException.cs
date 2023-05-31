@@ -18,7 +18,7 @@ public class QueryValidationHandlerNotImplementedException : Exception
     {
     }
 
-    public QueryValidationHandlerNotImplementedException(Type queryType) : base($"Query validation handler for query '{ queryType.Name }' has not been implemented.")
+    public QueryValidationHandlerNotImplementedException(Type queryType) : base($"Query validation handler for query '{queryType.Name}' has not been implemented.")
     {
     }
 

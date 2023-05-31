@@ -10,7 +10,8 @@ public class HandlerRegistrar
 {
     private readonly Type[] _handlerTypes;
 
-    public HandlerRegistrar(Type[] handlerTypes) {
+    public HandlerRegistrar(Type[] handlerTypes)
+    {
         _handlerTypes = handlerTypes;
     }
 
@@ -60,5 +61,4 @@ public class HandlerRegistrar
         var types = (Type[])criteriaObj;
         return (types.Select(t => t.Name).Contains(typeObj.Name));
     });
-    
 }

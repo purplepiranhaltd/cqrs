@@ -9,6 +9,7 @@ namespace PurplePiranha.Cqrs.Queries;
 public class QueryExecutor : IQueryExecutor
 {
     private readonly IQueryHandlerFactory _queryHandlerFactory;
+
     //private readonly IQueryValidatorExecutor _queryValidatorExecutor;
     private static readonly MethodInfo _executeAsyncMethod = typeof(QueryExecutor).GetMethod(nameof(ExecuteQueryAsync), BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -27,7 +28,7 @@ public class QueryExecutor : IQueryExecutor
         {
             var queryType = query.GetType();
             var resultType = typeof(TResult);
-            result = await(Task<Result<TResult>>)_executeAsyncMethod.MakeGenericMethod(queryType, resultType).Invoke(this, new object[] { query });
+            result = await (Task<Result<TResult>>)_executeAsyncMethod.MakeGenericMethod(queryType, resultType).Invoke(this, new object[] { query });
         }
         catch (TargetInvocationException ex)
         {

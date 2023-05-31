@@ -23,7 +23,7 @@ public class CommandHandlerNotImplementedException : Exception
     {
     }
 
-    public CommandHandlerNotImplementedException(Type commandType, Type resultType) : 
+    public CommandHandlerNotImplementedException(Type commandType, Type resultType) :
         base($"Command handler for command '{commandType.Name}' with result type '{resultType.Name}' has not been implemented.")
     {
     }
@@ -32,6 +32,7 @@ public class CommandHandlerNotImplementedException : Exception
     {
         return new CommandHandlerNotImplementedException(typeof(TCommand));
     }
+
     public static CommandHandlerNotImplementedException Create<TCommand, TResult>()
     {
         return new CommandHandlerNotImplementedException(typeof(TCommand), typeof(TResult));

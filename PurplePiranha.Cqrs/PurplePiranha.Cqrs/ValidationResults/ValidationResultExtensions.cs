@@ -4,7 +4,7 @@
 ////{
 ////    public static class ValidationResultExtensions
 ////    {
-////        public static ValidationResult IfValid(this ValidationResult result, Action action) 
+////        public static ValidationResult IfValid(this ValidationResult result, Action action)
 ////        {
 ////            if (result.IsValid)
 ////                action();

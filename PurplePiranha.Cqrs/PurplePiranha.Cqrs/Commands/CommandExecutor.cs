@@ -11,11 +11,11 @@ public class CommandExecutor : ICommandExecutor
     private readonly ICommandHandlerFactory _commandHandlerFactory;
     private static readonly MethodInfo _executeAsyncMethod = typeof(CommandExecutor).GetMethod(nameof(ExecuteCommandAsync), BindingFlags.NonPublic | BindingFlags.Instance);
 
-
     public CommandExecutor(ICommandHandlerFactory commandHandlerFactory)
     {
         _commandHandlerFactory = commandHandlerFactory;
     }
+
     public async Task<Result> ExecuteAsync<TCommand>(TCommand command) where TCommand : ICommand
     {
         try
@@ -23,7 +23,7 @@ public class CommandExecutor : ICommandExecutor
             var handler = _commandHandlerFactory.CreateHandler<TCommand>();
             return await handler.ExecuteAsync(command);
         }
-        catch(CommandHandlerNotImplementedException e)
+        catch (CommandHandlerNotImplementedException e)
         {
             return await Task.FromResult(Result.ErrorResult(CommandErrors.CommandHandlerNotImplemented));
         }

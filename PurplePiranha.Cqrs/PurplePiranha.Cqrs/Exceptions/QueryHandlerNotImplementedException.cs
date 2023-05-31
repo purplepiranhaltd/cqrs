@@ -18,7 +18,7 @@ public class QueryHandlerNotImplementedException : Exception
     {
     }
 
-    public QueryHandlerNotImplementedException(Type queryType, Type resultType) : base($"Query handler for query '{ queryType.Name }' with result type '{ resultType.Name }' has not been implemented.")
+    public QueryHandlerNotImplementedException(Type queryType, Type resultType) : base($"Query handler for query '{queryType.Name}' with result type '{resultType.Name}' has not been implemented.")
     {
     }
 

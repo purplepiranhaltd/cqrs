@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using PurplePiranha.Cqrs.Exceptions;
-using PurplePiranha.Cqrs.Validation.Extensions;
 using PurplePiranha.Cqrs.Queries.Validation;
+using PurplePiranha.Cqrs.Validation.Extensions;
 using PurplePiranha.Cqrs.Validation.Tests.TestClasses.Queries;
 
 namespace PurplePiranha.Cqrs.Validation.Tests;

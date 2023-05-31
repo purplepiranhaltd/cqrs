@@ -9,13 +9,8 @@ namespace PurplePiranha.Cqrs.Validation.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    #region Fields
-
-
-
-    #endregion
-
     #region Extension Methods
+
     public static IServiceCollection AddCqrsWithValidation(this IServiceCollection services)
     {
         services
@@ -27,9 +22,11 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    #endregion
+
+    #endregion Extension Methods
 
     #region Helpers
+
     private static IServiceCollection AddCqrsValidationHandlers(this IServiceCollection services)
     {
         var handlerRegistrar = new HandlerRegistrar(new Type[]
@@ -42,7 +39,5 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-
-
-    #endregion
+    #endregion Helpers
 }

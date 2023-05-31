@@ -27,13 +27,16 @@ public class QueryExecutorWithValidation : QueryExecutor
         var validationResult = (query is IValidatingQuery) ? await CallExecuteValidatorAsync<TQuery, TResult>(query) : Result.SuccessResult();
 
         validationResult
-            .OnError(e => { 
+            .OnError(e =>
+            {
                 result = Result.ErrorResult<TResult>(e);
             })
-            .OnValidationFailure(v => { 
+            .OnValidationFailure(v =>
+            {
                 result = Result.ValidationFailureResult<TResult>(v);
             })
-            .OnSuccess(async () => {
+            .OnSuccess(async () =>
+            {
                 try
                 {
                     var handler = _queryHandlerFactory.CreateHandler<TQuery, TResult>();
@@ -44,7 +47,7 @@ public class QueryExecutorWithValidation : QueryExecutor
                     result = await Task.FromResult(Result.ErrorResult<TResult>(QueryErrors.QueryHandlerNotImplemented));
                 }
             });
-       
+
         return result;
     }
 
