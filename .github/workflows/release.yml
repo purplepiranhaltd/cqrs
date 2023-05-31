@@ -1,0 +1,51 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Release
+
+on:
+  workflow_dispatch:                   # Allow running the workflow manually from the GitHub UI
+  release:
+    types: [published]                 # Run the workflow when a new GitHub release is published
+    tags:
+    - "v[0-9]+.[0-9]+.[0-9]+"
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+  NuGetDirectory: ${{ github.workspace}}/nuget
+  
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Verify commit exists in origin/main
+      run: |
+        git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+        git branch --remote --contains | grep origin/main
+    - name: Set VERSION variable from tag
+      run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release /p:Version=${VERSION} --no-restore
+    - name: Test
+      run: dotnet test --configuration Release /p:Version=${VERSION} --no-build --verbosity normal
+    - name: Create Nuget Package (PurplePiranha.Cqrs)
+      run: dotnet pack PurplePiranha.Cqrs/PurplePiranha.Cqrs.csproj --configuration Release /p:Version=${VERSION} --no-build --output ${{ env.NuGetDirectory }} --include-symbols -p:SymbolPackageFormat=snupkg
+    - name: Create Nuget Package (PurplePiranha.Cqrs.Validation)
+      run: dotnet pack PurplePiranha.Cqrs.Validation/PurplePiranha.Cqrs.Validation.csproj --configuration Release /p:Version=${VERSION} --no-build --output ${{ env.NuGetDirectory }} --include-symbols -p:SymbolPackageFormat=snupkg
+    - name: Push Nuget Package
+      run: dotnet nuget push ${{ env.NuGetDirectory }}/*.nupkg --api-key $API_KEY --source $SOURCE
+      env:
+        SOURCE: https://api.nuget.org/v3/index.json
+        API_KEY: ${{ secrets.NUGET_CQRS }}
