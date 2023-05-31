@@ -3,7 +3,6 @@ using PurplePiranha.Cqrs.Validation.Extensions;
 using PurplePiranha.Cqrs.Queries;
 using PurplePiranha.Cqrs.Validation.Queries;
 using PurplePiranha.Cqrs.Validation.Tests.TestClasses.Queries;
-using System.Runtime.CompilerServices;
 using PurplePiranha.FluentResults.Results;
 
 namespace PurplePiranha.Cqrs.Validation.Tests;
