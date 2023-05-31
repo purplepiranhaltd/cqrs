@@ -11,7 +11,7 @@ public interface IValidator<T> where T : IValidationRequired
     /// <summary>
     /// Validates the query.
     /// </summary>
-    /// <param name="query">The query.</param>
+    /// <param name="obj">The object to validate.</param>
     /// <returns>Validation failures</returns>
-    Task<Result> ValidateAsync(T query);
+    Task<Result> ValidateAsync(T obj);
 }
