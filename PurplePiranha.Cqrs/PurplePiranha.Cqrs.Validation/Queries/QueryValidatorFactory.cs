@@ -1,6 +1,4 @@
-﻿using PurplePiranha.Cqrs.Validation.Exceptions;
-
-namespace PurplePiranha.Cqrs.Validation.Queries;
+﻿namespace PurplePiranha.Cqrs.Validation.Queries;
 
 public class QueryValidatorFactory : IQueryValidatorFactory
 {
@@ -11,13 +9,13 @@ public class QueryValidatorFactory : IQueryValidatorFactory
         _serviceProvider = serviceProvider;
     }
 
-    public IQueryValidator<TQuery> CreateValidator<TQuery>() where TQuery : IValidatingQuery
+    public IQueryValidationHandler<TQuery> CreateValidationHandler<TQuery>() where TQuery : IValidatingQuery
     {
-        var handler = _serviceProvider.GetService(typeof(IQueryValidator<TQuery>));
+        var handler = _serviceProvider.GetService(typeof(IQueryValidationHandler<TQuery>));
 
         if (handler is null)
             throw QueryValidationHandlerNotImplementedException.Create<TQuery>();
 
-        return (IQueryValidator<TQuery>)handler;
+        return (IQueryValidationHandler<TQuery>)handler;
     }
 }

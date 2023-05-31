@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PurplePiranha.Cqrs.Validation.Exceptions;
+namespace PurplePiranha.Cqrs.Validation.Queries;
 
 public class QueryValidationHandlerNotImplementedException : Exception
 {

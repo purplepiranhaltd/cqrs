@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using PurplePiranha.Cqrs.Validation.Exceptions;
 using PurplePiranha.Cqrs.Validation.Extensions;
 using PurplePiranha.Cqrs.Validation.Queries;
 using PurplePiranha.Cqrs.Validation.Tests.TestClasses.Queries;
@@ -26,7 +25,7 @@ public class QueryValidationHandlerFactoryUnitTests
     [Test]
     public void Test_QueryValidationHandlerFactory_ResolvesQueryValidationHandler()
     {
-        var handler = _queryValidationHandlerFactory.CreateValidator<TestValidatingQuery>();
+        var handler = _queryValidationHandlerFactory.CreateValidationHandler<TestValidatingQuery>();
         Assert.That(handler, Is.Not.Null);
         Assert.That(handler.GetType(), Is.EqualTo(typeof(TestValidatingQueryValidator)));
     }
@@ -36,7 +35,7 @@ public class QueryValidationHandlerFactoryUnitTests
     {
         Assert.Throws<QueryValidationHandlerNotImplementedException>(() =>
         {
-            var handler = _queryValidationHandlerFactory.CreateValidator<TestValidatingQueryWithoutValidationHandler>();
+            var handler = _queryValidationHandlerFactory.CreateValidationHandler<TestValidatingQueryWithoutValidationHandler>();
         });
     }
 }

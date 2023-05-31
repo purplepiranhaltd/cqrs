@@ -3,7 +3,7 @@ using PurplePiranha.FluentResults.Results;
 
 namespace PurplePiranha.Cqrs.Validation.Tests.TestClasses.Queries;
 
-public class TestValidatingQueryValidator : IQueryValidator<TestValidatingQuery>
+public class TestValidatingQueryValidator : IQueryValidationHandler<TestValidatingQuery>
 {
     public async Task<Result> ValidateAsync(TestValidatingQuery query)
     {

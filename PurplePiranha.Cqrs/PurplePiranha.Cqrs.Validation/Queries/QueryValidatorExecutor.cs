@@ -4,7 +4,7 @@ using PurplePiranha.FluentResults.Results;
 
 namespace PurplePiranha.Cqrs.Validation.Queries;
 
-public class QueryValidatorExecutor : IQueryValidatorExecutor
+public class QueryValidatorExecutor : IQueryValidationExecutor
 {
     private readonly IQueryValidatorFactory _factory;
 
@@ -18,7 +18,7 @@ public class QueryValidatorExecutor : IQueryValidatorExecutor
     {
         try
         {
-            var handler = _factory.CreateValidator<TQuery>();
+            var handler = _factory.CreateValidationHandler<TQuery>();
             return await handler.ValidateAsync(query);
         }
         catch (CommandHandlerNotImplementedException e)

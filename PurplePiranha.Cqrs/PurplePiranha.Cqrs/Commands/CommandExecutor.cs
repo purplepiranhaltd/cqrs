@@ -57,7 +57,6 @@ public class CommandExecutor : ICommandExecutor
         // We make a dynamic call to the generic method via reflection,
         // otherwise the return type would have to be specified on every call
 
-
         var commandType = command.GetType();
         var resultType = typeof(TResult);
 

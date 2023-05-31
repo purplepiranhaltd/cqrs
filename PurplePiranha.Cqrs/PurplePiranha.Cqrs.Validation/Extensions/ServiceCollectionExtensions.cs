@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
         services
             .AddCqrs()
             .AddScoped<IQueryValidatorFactory, QueryValidatorFactory>()
-            .AddScoped<IQueryValidatorExecutor, QueryValidatorExecutor>()
+            .AddScoped<IQueryValidationExecutor, QueryValidatorExecutor>()
             .AddScoped<IQueryExecutor, QueryExecutorWithValidation>() // override original
             .AddCqrsValidationHandlers();
 
@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
     {
         var handlerRegistrar = new HandlerRegistrar(new Type[]
         {
-        typeof(IQueryValidator<>)
+        typeof(IQueryValidationHandler<>)
         });
 
         handlerRegistrar.RegisterHandlers(services);
