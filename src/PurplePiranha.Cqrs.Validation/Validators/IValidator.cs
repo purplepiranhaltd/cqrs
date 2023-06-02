@@ -1,4 +1,5 @@
 ﻿using PurplePiranha.FluentResults.Results;
+using PurplePiranha.FluentResults.Validation.Results;
 
 namespace PurplePiranha.Cqrs.Validation.Validators;
 
@@ -13,5 +14,5 @@ public interface IValidator<T> where T : IValidationRequired
     /// </summary>
     /// <param name="obj">The object to validate.</param>
     /// <returns>Validation failures</returns>
-    Task<Result> ValidateAsync(T obj);
+    Task<ResultWithValidation> ValidateAsync(T obj);
 }

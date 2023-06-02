@@ -5,19 +5,20 @@ using PurplePiranha.Cqrs.Validation.Queries;
 using PurplePiranha.Cqrs.Validation.Tests.TestClasses.Queries;
 using PurplePiranha.Cqrs.Validation.Validators;
 using PurplePiranha.FluentResults.Results;
+using PurplePiranha.FluentResults.Validation.Results;
 
 namespace PurplePiranha.Cqrs.Validation.Tests;
 
 public class QueryExecutorWithValidationUnitTests
 {
-    private readonly IQueryExecutor _queryExecutor;
+    private readonly IValidatingQueryExecutor _queryExecutor;
 
     public QueryExecutorWithValidationUnitTests()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddCqrsWithValidation();
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        _queryExecutor = serviceProvider.GetRequiredService<IQueryExecutor>();
+        _queryExecutor = serviceProvider.GetRequiredService<IValidatingQueryExecutor>();
     }
 
     [SetUp]
@@ -39,11 +40,6 @@ public class QueryExecutorWithValidationUnitTests
         Assert.That(result.Value, Is.EqualTo(4));
     }
 
-    [Test]
-    public void QueryExecutor_IsQueryExecutorWithValidation()
-    {
-        Assert.That(_queryExecutor, Is.TypeOf<QueryExecutorWithValidation>());
-    }
 
     [Test]
     public async Task QueryExecutor_PerformsValidation()

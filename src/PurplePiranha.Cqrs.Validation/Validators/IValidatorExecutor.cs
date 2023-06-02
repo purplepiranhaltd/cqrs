@@ -1,5 +1,6 @@
 ﻿using PurplePiranha.Cqrs.Queries;
 using PurplePiranha.FluentResults.Results;
+using PurplePiranha.FluentResults.Validation.Results;
 
 namespace PurplePiranha.Cqrs.Validation.Validators;
 
@@ -14,7 +15,7 @@ public interface IValidatorExecutor
     /// <typeparam name="TQuery">The type of the query.</typeparam>
     /// <param name="query">The query.</param>
     /// <returns></returns>
-    Task<Result> ExecuteAsync<TQuery>(TQuery query) where TQuery : IValidationRequired;
+    Task<ResultWithValidation> ExecuteAsync<TQuery>(TQuery query) where TQuery : IValidationRequired;
 
     ///// <summary>
     ///// Executes the validation.

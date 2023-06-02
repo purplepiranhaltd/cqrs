@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using PurplePiranha.Cqrs.Commands;
 using PurplePiranha.Cqrs.Extensions;
 using PurplePiranha.Cqrs.Queries;
@@ -6,6 +7,7 @@ using PurplePiranha.Cqrs.ServiceRegistration;
 using PurplePiranha.Cqrs.Validation.Commands;
 using PurplePiranha.Cqrs.Validation.Queries;
 using PurplePiranha.Cqrs.Validation.Validators;
+using System.Security.Cryptography.X509Certificates;
 
 namespace PurplePiranha.Cqrs.Validation.Extensions;
 
@@ -15,17 +17,19 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddCqrsWithValidation(this IServiceCollection services)
     {
+        // remove the default query and command executors
+        services.RemoveAll<IQueryExecutor>(); 
+        services.RemoveAll<ICommandExecutor>();
+
         services
             .AddCqrs()
-
             .AddScoped<IValidatorFactory, ValidatorFactory>()
             .AddScoped<IValidatorExecutor, ValidatorExecutor>()
-
-            // override original QueryExecutor & CommandExecutor
-            .AddScoped<IQueryExecutor, QueryExecutorWithValidation>() 
-            .AddScoped<ICommandExecutor, CommandExecutorWithValidation>()
-
+            .AddScoped<IValidatingQueryExecutor, ValidatingQueryExecutor>() 
+            .AddScoped<IValidatingCommandExecutor, ValidatingCommandExecutor>()
             .AddCqrsValidationHandlers();
+
+
 
         return services;
     }
