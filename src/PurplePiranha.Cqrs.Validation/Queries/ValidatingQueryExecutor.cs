@@ -1,4 +1,5 @@
-﻿using PurplePiranha.Cqrs.Queries;
+﻿using FluentValidation.Results;
+using PurplePiranha.Cqrs.Queries;
 using PurplePiranha.Cqrs.Validation.Validators;
 using PurplePiranha.FluentResults.Results;
 using PurplePiranha.FluentResults.Validation.Results;
@@ -72,7 +73,7 @@ namespace PurplePiranha.Cqrs.Validation.Queries
 
         
 
-        private async Task<ResultWithValidation> CallPerformValidatationAsync<TQuery>(TQuery query)
+        private async Task<ValidationResult> CallPerformValidatationAsync<TQuery>(TQuery query)
         {
             var queryType = query.GetType();
 
@@ -81,7 +82,7 @@ namespace PurplePiranha.Cqrs.Validation.Queries
                 var method = PerformValidatationAsyncMethod.MakeGenericMethod(queryType);
 
 #nullable disable
-                return await (Task<ResultWithValidation>)method.Invoke(this, new object[] { query });
+                return await (Task<ValidationResult>)method.Invoke(this, new object[] { query });
 #nullable enable
 
             }
@@ -100,10 +101,13 @@ namespace PurplePiranha.Cqrs.Validation.Queries
 
         private async Task<ResultWithValidation<TResult>> PerformExecutionAsync<TQuery, TResult>(TQuery query) where TQuery : IQuery<TResult>
         {
-            var validationResult = (query is IValidationRequired) ? await CallPerformValidatationAsync(query) : ResultWithValidation.SuccessResult();
+            if (query is IValidationRequired)
+            {
+                var validationResult = await CallPerformValidatationAsync(query);
 
-            if (!validationResult.IsSuccess)
-                return validationResult;
+                if (!validationResult.IsValid)
+                    return ResultWithValidation.ValidationFailureResult(validationResult);
+            }          
 
             return await base.ExecuteAsync(query);
         }
@@ -114,7 +118,7 @@ namespace PurplePiranha.Cqrs.Validation.Queries
         /// <typeparam name="TQuery">The type of the query.</typeparam>
         /// <param name="query">The query.</param>
         /// <returns></returns>
-        private async Task<ResultWithValidation> PerformValidatationAsync<TQuery>(TQuery query) where TQuery : IValidationRequired
+        private async Task<ValidationResult> PerformValidatationAsync<TQuery>(TQuery query) where TQuery : IValidationRequired
         {
             return await _validatorExecutor.ExecuteAsync(query);
         }

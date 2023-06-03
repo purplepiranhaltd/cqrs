@@ -1,4 +1,5 @@
-﻿using PurplePiranha.Cqrs.Commands;
+﻿using FluentValidation.Results;
+using PurplePiranha.Cqrs.Commands;
 using PurplePiranha.Cqrs.Queries;
 using PurplePiranha.Cqrs.Validation.Queries;
 using PurplePiranha.Cqrs.Validation.Validators;
@@ -77,7 +78,7 @@ namespace PurplePiranha.Cqrs.Validation.Commands
             }
         }
 
-        private async Task<ResultWithValidation> CallPerformValidatationAsync<TCommand>(TCommand command)
+        private async Task<ValidationResult> CallPerformValidatationAsync<TCommand>(TCommand command)
         {
             var queryType = command.GetType();
 
@@ -86,7 +87,7 @@ namespace PurplePiranha.Cqrs.Validation.Commands
                 var method = PerformValidatationAsyncMethod.MakeGenericMethod(queryType);
 
 #nullable disable
-                return await (Task<ResultWithValidation>)method.Invoke(this, new object[] { command });
+                return await (Task<ValidationResult>)method.Invoke(this, new object[] { command });
 #nullable enable
 
             }
@@ -105,20 +106,26 @@ namespace PurplePiranha.Cqrs.Validation.Commands
 
         private async Task<ResultWithValidation<TResult>> PerformExecutionTAsync<TCommand, TResult>(TCommand query) where TCommand : ICommand<TResult>
         {
-            var validationResult = (query is IValidationRequired) ? await CallPerformValidatationAsync(query) : ResultWithValidation.SuccessResult();
+            if (query is IValidationRequired)
+            {
+                var validationResult = await CallPerformValidatationAsync(query);
 
-            if (!validationResult.IsSuccess)
-                return validationResult;
+                if (!validationResult.IsValid)
+                    return ResultWithValidation.ValidationFailureResult(validationResult);
+            }
 
             return await base.ExecuteAsync(query);
         }
 
         private async Task<ResultWithValidation> PerformExecutionAsync<TCommand>(TCommand query) where TCommand : ICommand
         {
-            var validationResult = (query is IValidationRequired) ? await CallPerformValidatationAsync(query) : ResultWithValidation.SuccessResult();
+            if (query is IValidationRequired)
+            {
+                var validationResult = await CallPerformValidatationAsync(query);
 
-            if (!validationResult.IsSuccess)
-                return validationResult;
+                if (!validationResult.IsValid)
+                    return ResultWithValidation.ValidationFailureResult(validationResult);
+            }            
 
             return await base.ExecuteAsync(query);
         }
@@ -129,7 +136,7 @@ namespace PurplePiranha.Cqrs.Validation.Commands
         /// <typeparam name="TCommand">The type of the query.</typeparam>
         /// <param name="query">The query.</param>
         /// <returns></returns>
-        private async Task<ResultWithValidation> PerformValidatationAsync<TCommand>(TCommand query) where TCommand : IValidationRequired
+        private async Task<ValidationResult> PerformValidatationAsync<TCommand>(TCommand query) where TCommand : IValidationRequired
         {
             return await _validatorExecutor.ExecuteAsync(query);
         }

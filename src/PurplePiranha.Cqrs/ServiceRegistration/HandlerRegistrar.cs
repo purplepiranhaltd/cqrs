@@ -44,7 +44,7 @@ public class HandlerRegistrar
             .SelectMany(x => x.GetTypes())
             .Where(x =>
             {
-                if (x.IsInterface || x.IsAbstract) return false;
+                if (x.IsInterface || x.IsAbstract || x.IsGenericTypeDefinition) return false;
                 foreach (var t in _handlerTypes)
                 {
                     if (t.IsAssignableFrom(x)) return true;

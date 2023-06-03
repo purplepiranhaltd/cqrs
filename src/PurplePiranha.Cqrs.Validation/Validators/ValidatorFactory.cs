@@ -1,4 +1,6 @@
-﻿namespace PurplePiranha.Cqrs.Validation.Validators;
+﻿using FluentValidation;
+
+namespace PurplePiranha.Cqrs.Validation.Validators;
 
 public class ValidatorFactory : IValidatorFactory
 {
@@ -9,13 +11,13 @@ public class ValidatorFactory : IValidatorFactory
         _serviceProvider = serviceProvider;
     }
 
-    public IValidator<TQuery> CreateValidator<TQuery>() where TQuery : IValidationRequired
+    public IValidator<T> CreateValidator<T>() where T : IValidationRequired
     {
-        var handler = _serviceProvider.GetService(typeof(IValidator<TQuery>));
+        var handler = _serviceProvider.GetService(typeof(IValidator<T>));
 
         if (handler is null)
-            throw ValidatorNotImplementedException.Create<TQuery>();
+            throw ValidatorNotImplementedException.Create<T>();
 
-        return (IValidator<TQuery>)handler;
+        return (IValidator<T>)handler;
     }
 }

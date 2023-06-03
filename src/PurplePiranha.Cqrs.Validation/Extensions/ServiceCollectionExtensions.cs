@@ -42,7 +42,7 @@ public static class ServiceCollectionExtensions
     {
         var handlerRegistrar = new HandlerRegistrar(new Type[]
         {
-        typeof(IValidator<>)
+        typeof(FluentValidation.IValidator<>)
         });
 
         handlerRegistrar.RegisterHandlers(services);

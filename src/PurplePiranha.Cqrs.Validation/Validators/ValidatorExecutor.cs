@@ -1,4 +1,5 @@
-﻿using PurplePiranha.Cqrs.Commands;
+﻿using FluentValidation.Results;
+using PurplePiranha.Cqrs.Commands;
 using PurplePiranha.Cqrs.Queries;
 using PurplePiranha.FluentResults.Results;
 using PurplePiranha.FluentResults.Validation.Results;
@@ -14,8 +15,7 @@ public class ValidatorExecutor : IValidatorExecutor
         _factory = factory;
     }
 
-    //TODO: Probably move this into the other method, but it's here to remind me when we do commands!
-    public async Task<ResultWithValidation> ExecuteAsync<TQuery>(TQuery query) where TQuery : IValidationRequired
+    public async Task<ValidationResult> ExecuteAsync<TQuery>(TQuery query) where TQuery : IValidationRequired
     {
         try
         {
@@ -24,12 +24,8 @@ public class ValidatorExecutor : IValidatorExecutor
         }
         catch (CommandHandlerNotImplementedException e)
         {
-            return await Task.FromResult(ResultWithValidation.ErrorResult(CommandErrors.CommandHandlerNotImplemented));
+            //TODO: Logging
+            throw;
         }
     }
-
-    //public async Task<Result> ExecuteAsync<TQuery, TResult>(TQuery query) where TQuery : IValidationRequired, IQuery<TResult>
-    //{
-    //    return await ExecuteAsync(query);
-    //}
 }

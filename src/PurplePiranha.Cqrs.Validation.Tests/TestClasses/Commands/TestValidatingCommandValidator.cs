@@ -1,4 +1,5 @@
-﻿using PurplePiranha.Cqrs.Validation.Validators;
+﻿using FluentValidation;
+using PurplePiranha.Cqrs.Validation.Validators;
 using PurplePiranha.FluentResults.Results;
 using PurplePiranha.FluentResults.Validation.Results;
 using System;
@@ -9,14 +10,11 @@ using System.Threading.Tasks;
 
 namespace PurplePiranha.Cqrs.Validation.Tests.TestClasses.Commands
 {
-    public class TestValidatingCommandValidator : IValidator<TestValidatingCommand>
+    public class TestValidatingCommandValidator : AbstractValidator<TestValidatingCommand>
     {
-        public async Task<ResultWithValidation> ValidateAsync(TestValidatingCommand query)
+        public TestValidatingCommandValidator()
         {
-            if (query.IMustNotBe100 == 100)
-                return await Task.FromResult(ResultWithValidation.ValidationFailureResult(new string[] { "Must not be 100" }.ToList())); 
-
-            return await Task.FromResult(ResultWithValidation.SuccessResult());
+            RuleFor(c => c.IMustNotBe100).NotEqual(100);
         }
     }
 }
