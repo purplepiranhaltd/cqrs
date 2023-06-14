@@ -26,11 +26,11 @@
 		<PackageReference Include="FluentValidation" Version="11.5.2" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-		<PackageReference Include="PurplePiranha.FluentResults" Version="1.0.11" />
+		<PackageReference Include="PurplePiranha.FluentResults" Version="1.0.12" />
 	</ItemGroup>
 	
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-		<PackageReference Include="PurplePiranha.FluentResults.Validation" Version="1.0.11" />
+		<PackageReference Include="PurplePiranha.FluentResults.Validation" Version="1.0.12" />
 	</ItemGroup>
 </Project>
