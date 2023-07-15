@@ -1,4 +1,5 @@
 ﻿using PurplePiranha.Cqrs.Commands;
+using PurplePiranha.Cqrs.Failures;
 using PurplePiranha.FluentResults.Results;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
@@ -65,7 +66,7 @@ public class QueryExecutor : IQueryExecutor
         }
         catch (CommandHandlerNotImplementedException e)
         {
-            return await Task.FromResult(Result.ErrorResult<TResult>(QueryErrors.QueryHandlerNotImplemented));
+            return await Task.FromResult(Result.FailureResult<TResult>(new QueryHandlerNotImplementedFailure(nameof(TQuery))));
         }
     }
 }

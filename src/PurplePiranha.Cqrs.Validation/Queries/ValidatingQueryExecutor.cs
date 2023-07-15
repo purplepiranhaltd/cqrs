@@ -1,15 +1,11 @@
 ﻿using FluentValidation.Results;
 using PurplePiranha.Cqrs.Queries;
+using PurplePiranha.Cqrs.Validation.Failures;
 using PurplePiranha.Cqrs.Validation.Validators;
 using PurplePiranha.FluentResults.Results;
-using PurplePiranha.FluentResults.Validation.Results;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
-using System.Text;
-using System.Threading.Tasks;
+using ValidationFailure = PurplePiranha.Cqrs.Validation.Failures.ValidationFailure;
 
 namespace PurplePiranha.Cqrs.Validation.Queries
 {
@@ -39,12 +35,12 @@ namespace PurplePiranha.Cqrs.Validation.Queries
             //_queryExecutor = queryExecutor;
         }
 
-        public new async Task<ResultWithValidation<TResult>> ExecuteAsync<TResult>(IQuery<TResult> query)
+        public new async Task<Result<TResult>> ExecuteAsync<TResult>(IQuery<TResult> query)
         {
             return await CallPerformExecuteAsync<TResult>(query);
         }
 
-        private async Task<ResultWithValidation<TResult>> CallPerformExecuteAsync<TResult>(IQuery<TResult> query)
+        private async Task<Result<TResult>> CallPerformExecuteAsync<TResult>(IQuery<TResult> query)
         {
             var queryType = query.GetType();
             var resultType = typeof(TResult);
@@ -54,7 +50,7 @@ namespace PurplePiranha.Cqrs.Validation.Queries
                 var method = PerformExecutionAsyncMethod.MakeGenericMethod(queryType, resultType);
 
 #nullable disable
-                return await (Task<ResultWithValidation<TResult>>)method.Invoke(this, new object[] { query });
+                return await (Task<Result<TResult>>)method.Invoke(this, new object[] { query });
 #nullable enable
 
             }
@@ -99,14 +95,14 @@ namespace PurplePiranha.Cqrs.Validation.Queries
             }
         }
 
-        private async Task<ResultWithValidation<TResult>> PerformExecutionAsync<TQuery, TResult>(TQuery query) where TQuery : IQuery<TResult>
+        private async Task<Result<TResult>> PerformExecutionAsync<TQuery, TResult>(TQuery query) where TQuery : IQuery<TResult>
         {
             if (query is IValidationRequired)
             {
                 var validationResult = await CallPerformValidatationAsync(query);
 
                 if (!validationResult.IsValid)
-                    return ResultWithValidation.ValidationFailureResult(validationResult);
+                    return Result.FailureResult(ValidationFailure.CreateForQuery<TQuery, TResult>(validationResult));
             }          
 
             return await base.ExecuteAsync(query);

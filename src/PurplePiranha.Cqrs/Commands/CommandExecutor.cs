@@ -1,4 +1,5 @@
-﻿using PurplePiranha.FluentResults.Results;
+﻿using PurplePiranha.Cqrs.Failures;
+using PurplePiranha.FluentResults.Results;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ public class CommandExecutor : ICommandExecutor
         }
         catch (CommandHandlerNotImplementedException e)
         {
-            return await Task.FromResult(Result.ErrorResult(CommandErrors.CommandHandlerNotImplemented));
+            return await Task.FromResult(Result.FailureResult(new CommandHandlerNotImplementedFailure(nameof(TCommand))));
         }
     }
 
@@ -98,7 +99,7 @@ public class CommandExecutor : ICommandExecutor
         }
         catch (CommandHandlerNotImplementedException e)
         {
-            return await Task.FromResult(Result.ErrorResult<TResult>(CommandErrors.CommandHandlerNotImplemented));
+            return await Task.FromResult(Result.FailureResult<TResult>(new CommandHandlerNotImplementedFailure(nameof(TCommand))));
         }
     }
 }

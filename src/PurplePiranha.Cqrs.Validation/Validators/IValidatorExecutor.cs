@@ -1,7 +1,4 @@
 ﻿using FluentValidation.Results;
-using PurplePiranha.Cqrs.Queries;
-using PurplePiranha.FluentResults.Results;
-using PurplePiranha.FluentResults.Validation.Results;
 
 namespace PurplePiranha.Cqrs.Validation.Validators;
 

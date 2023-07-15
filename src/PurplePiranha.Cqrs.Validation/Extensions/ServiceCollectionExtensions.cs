@@ -7,7 +7,6 @@ using PurplePiranha.Cqrs.ServiceRegistration;
 using PurplePiranha.Cqrs.Validation.Commands;
 using PurplePiranha.Cqrs.Validation.Queries;
 using PurplePiranha.Cqrs.Validation.Validators;
-using System.Security.Cryptography.X509Certificates;
 
 namespace PurplePiranha.Cqrs.Validation.Extensions;
 

@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using PurplePiranha.FluentResults.Validation.Results;
-using PurplePiranha.Cqrs.Commands;
 using PurplePiranha.Cqrs.Validation.Commands;
 using PurplePiranha.Cqrs.Validation.Extensions;
+using PurplePiranha.Cqrs.Validation.Failures;
 using PurplePiranha.Cqrs.Validation.Tests.TestClasses.Commands;
 using PurplePiranha.Cqrs.Validation.Validators;
+using PurplePiranha.FluentResults.Results;
 
 namespace PurplePiranha.Cqrs.Validation.Tests;
 
@@ -43,9 +43,12 @@ public class CommandExecutorWithValidationUnitTests
     public async Task CommandExecutorWithValidation_PerformsValidation()
     {
         var result = await _commandExecutor.ExecuteAsync(new TestValidatingCommand(100));
-        result.OnValidationFailure(v =>
+        result.OnFailure(f =>
         {
-            Assert.Pass();
+            if (f is ValidationFailure vf)
+            {
+                Assert.Pass();
+            }
         });
         Assert.Fail();
     }

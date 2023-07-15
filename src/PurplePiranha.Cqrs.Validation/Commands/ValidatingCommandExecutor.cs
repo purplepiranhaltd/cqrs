@@ -1,18 +1,11 @@
 ﻿using FluentValidation.Results;
 using PurplePiranha.Cqrs.Commands;
-using PurplePiranha.Cqrs.Queries;
-using PurplePiranha.Cqrs.Validation.Queries;
+using PurplePiranha.Cqrs.Validation.Failures;
 using PurplePiranha.Cqrs.Validation.Validators;
 using PurplePiranha.FluentResults.Results;
-using PurplePiranha.FluentResults.Validation.Results;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
-using System.Text;
-using System.Threading.Tasks;
+using ValidationFailure = PurplePiranha.Cqrs.Validation.Failures.ValidationFailure;
 
 namespace PurplePiranha.Cqrs.Validation.Commands
 {
@@ -41,17 +34,17 @@ namespace PurplePiranha.Cqrs.Validation.Commands
             _validatorExecutor = validatorExecutor;
         }
 
-        async Task<ResultWithValidation> IValidatingCommandExecutor.ExecuteAsync<TCommand>(TCommand command)
+        async Task<Result> IValidatingCommandExecutor.ExecuteAsync<TCommand>(TCommand command)
         {
             return await PerformExecutionAsync<TCommand>(command);
         }
 
-        async Task<ResultWithValidation<TResult>> IValidatingCommandExecutor.ExecuteAsync<TResult>(ICommand<TResult> command)
+        async Task<Result<TResult>> IValidatingCommandExecutor.ExecuteAsync<TResult>(ICommand<TResult> command)
         {
             return await CallPerformExecuteTAsync<TResult>(command);
         }
 
-        private async Task<ResultWithValidation<TResult>> CallPerformExecuteTAsync<TResult>(ICommand<TResult> command)
+        private async Task<Result<TResult>> CallPerformExecuteTAsync<TResult>(ICommand<TResult> command)
         {
             var commandType = command.GetType();
             var resultType = typeof(TResult);
@@ -61,7 +54,7 @@ namespace PurplePiranha.Cqrs.Validation.Commands
                 var method = PerformExecutionTAsyncMethod.MakeGenericMethod(commandType, resultType);
 
 #nullable disable
-                return await (Task<ResultWithValidation<TResult>>)method.Invoke(this, new object[] { command });
+                return await (Task<Result<TResult>>)method.Invoke(this, new object[] { command });
 #nullable enable
 
             }
@@ -104,27 +97,27 @@ namespace PurplePiranha.Cqrs.Validation.Commands
             }
         }
 
-        private async Task<ResultWithValidation<TResult>> PerformExecutionTAsync<TCommand, TResult>(TCommand query) where TCommand : ICommand<TResult>
+        private async Task<Result<TResult>> PerformExecutionTAsync<TCommand, TResult>(TCommand query) where TCommand : ICommand<TResult>
         {
             if (query is IValidationRequired)
             {
                 var validationResult = await CallPerformValidatationAsync(query);
 
                 if (!validationResult.IsValid)
-                    return ResultWithValidation.ValidationFailureResult(validationResult);
+                    return Result.FailureResult(ValidationFailure.CreateForCommand<TCommand, TResult>(validationResult));
             }
 
             return await base.ExecuteAsync(query);
         }
 
-        private async Task<ResultWithValidation> PerformExecutionAsync<TCommand>(TCommand query) where TCommand : ICommand
+        private async Task<Result> PerformExecutionAsync<TCommand>(TCommand query) where TCommand : ICommand
         {
             if (query is IValidationRequired)
             {
                 var validationResult = await CallPerformValidatationAsync(query);
 
                 if (!validationResult.IsValid)
-                    return ResultWithValidation.ValidationFailureResult(validationResult);
+                    return Result.FailureResult(ValidationFailure.CreateForCommand<TCommand>(validationResult));
             }            
 
             return await base.ExecuteAsync(query);

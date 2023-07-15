@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PurplePiranha.Cqrs.Validation.Validators;
+﻿namespace PurplePiranha.Cqrs.Validation.Validators;
 
 public class ValidatorNotImplementedException : Exception
 {

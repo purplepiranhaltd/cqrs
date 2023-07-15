@@ -1,11 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using PurplePiranha.Cqrs.Queries;
 using PurplePiranha.Cqrs.Validation.Extensions;
+using PurplePiranha.Cqrs.Validation.Failures;
 using PurplePiranha.Cqrs.Validation.Queries;
 using PurplePiranha.Cqrs.Validation.Tests.TestClasses.Queries;
 using PurplePiranha.Cqrs.Validation.Validators;
 using PurplePiranha.FluentResults.Results;
-using PurplePiranha.FluentResults.Validation.Results;
 
 namespace PurplePiranha.Cqrs.Validation.Tests;
 
@@ -45,9 +44,12 @@ public class QueryExecutorWithValidationUnitTests
     public async Task QueryExecutor_PerformsValidation()
     {
         var result = await _queryExecutor.ExecuteAsync(new TestValidatingQuery(Int32.MaxValue));
-        result.OnValidationFailure(v =>
+        result.OnFailure(f =>
         {
-            Assert.Pass();
+            if (f is ValidationFailure vf)
+            {
+                Assert.Pass();
+            }
         });
         Assert.Fail();
     }
