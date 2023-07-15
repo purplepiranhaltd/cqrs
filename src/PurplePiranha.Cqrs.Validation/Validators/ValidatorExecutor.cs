@@ -19,7 +19,7 @@ public class ValidatorExecutor : IValidatorExecutor
             var handler = _factory.CreateValidator<TQuery>();
             return await handler.ValidateAsync(query);
         }
-        catch (CommandHandlerNotImplementedException e)
+        catch (ValidatorNotImplementedException e)
         {
             //TODO: Logging
             throw;
