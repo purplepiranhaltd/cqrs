@@ -20,9 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICommandHandlerFactory, CommandHandlerFactory>();
         services.AddScoped<ICommandExecutor, CommandExecutor>();
         services.AddScoped<IQueryHandlerFactory, QueryHandlerFactory>();
-        //services.AddScoped<IQueryValidatorFactory, QueryValidatorFactory>();
         services.AddScoped<IQueryExecutor, QueryExecutor>();
-        //services.AddScoped<IQueryValidatorExecutor, QueryValidatorExecutor>();
         services.AddCqrsHandlers();
         return services;
     }

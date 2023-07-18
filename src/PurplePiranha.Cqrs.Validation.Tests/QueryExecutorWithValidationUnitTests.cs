@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using PurplePiranha.Cqrs.Extensions;
+using PurplePiranha.Cqrs.Queries;
 using PurplePiranha.Cqrs.Validation.Extensions;
 using PurplePiranha.Cqrs.Validation.Failures;
 using PurplePiranha.Cqrs.Validation.Queries;
@@ -10,14 +12,14 @@ namespace PurplePiranha.Cqrs.Validation.Tests;
 
 public class QueryExecutorWithValidationUnitTests
 {
-    private readonly IValidatingQueryExecutor _queryExecutor;
+    private readonly IQueryExecutor _queryExecutor;
 
     public QueryExecutorWithValidationUnitTests()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddCqrsWithValidation();
+        serviceCollection.AddCqrs().WithCqrsValidation();
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        _queryExecutor = serviceProvider.GetRequiredService<IValidatingQueryExecutor>();
+        _queryExecutor = serviceProvider.GetRequiredService<IQueryExecutor>();
     }
 
     [SetUp]

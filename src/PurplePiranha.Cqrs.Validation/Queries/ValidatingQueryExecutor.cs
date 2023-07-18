@@ -9,8 +9,10 @@ using ValidationFailure = PurplePiranha.Cqrs.Validation.Failures.ValidationFailu
 
 namespace PurplePiranha.Cqrs.Validation.Queries
 {
-    public class ValidatingQueryExecutor : QueryExecutor, IValidatingQueryExecutor
+    public class ValidatingQueryExecutor : IQueryExecutor
     {
+
+        private readonly IQueryExecutor _queryExecutor;
         private readonly IValidatorExecutor _validatorExecutor;
 
 #nullable disable
@@ -29,13 +31,15 @@ namespace PurplePiranha.Cqrs.Validation.Queries
                 );
 #nullable enable
 
-        public ValidatingQueryExecutor(IValidatorExecutor validatorExecutor, /*IQueryExecutor queryExecutor,*/ IQueryHandlerFactory queryHandlerFactory) : base(queryHandlerFactory)
+        public ValidatingQueryExecutor(
+            IQueryExecutor queryExecutor,
+            IValidatorExecutor validatorExecutor)
         {
+            _queryExecutor = queryExecutor;
             _validatorExecutor = validatorExecutor;
-            //_queryExecutor = queryExecutor;
         }
 
-        public new async Task<Result<TResult>> ExecuteAsync<TResult>(IQuery<TResult> query)
+        public async Task<Result<TResult>> ExecuteAsync<TResult>(IQuery<TResult> query)
         {
             return await CallPerformExecuteAsync<TResult>(query);
         }
@@ -105,7 +109,7 @@ namespace PurplePiranha.Cqrs.Validation.Queries
                     return Result.FailureResult(ValidationFailure.CreateForQuery<TQuery, TResult>(validationResult));
             }          
 
-            return await base.ExecuteAsync(query);
+            return await _queryExecutor.ExecuteAsync(query);
         }
 
         /// <summary>

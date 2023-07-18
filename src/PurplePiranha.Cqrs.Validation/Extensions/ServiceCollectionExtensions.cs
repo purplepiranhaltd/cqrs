@@ -14,18 +14,41 @@ public static class ServiceCollectionExtensions
 {
     #region Extension Methods
 
-    public static IServiceCollection AddCqrsWithValidation(this IServiceCollection services)
+    public static IServiceCollection WithCqrsValidation(this IServiceCollection services)
     {
-        // remove the default query and command executors
-        services.RemoveAll<IQueryExecutor>(); 
+        // Get the currently registered IQueryExecutor and then register it's concrete type instead
+        var queryExecutorType = services.Where(x => x.ServiceType == typeof(IQueryExecutor)).Select(x => x.ImplementationType).FirstOrDefault();
+
+        if (queryExecutorType is null)
+            throw new ArgumentNullException(nameof(queryExecutorType));
+
+        services.AddScoped(queryExecutorType);
+        services.RemoveAll<IQueryExecutor>();
+
+        // Get the currently registered ICommandExecutor and then register it's concrete type instead
+        var commandExecutorType = services.Where(x => x.ServiceType == typeof(ICommandExecutor)).Select(x => x.ImplementationType).FirstOrDefault();
+
+        if (commandExecutorType is null)
+            throw new ArgumentNullException(nameof(commandExecutorType));
+
+        services.AddScoped(commandExecutorType);
         services.RemoveAll<ICommandExecutor>();
 
         services
-            .AddCqrs()
             .AddScoped<IValidatorFactory, ValidatorFactory>()
             .AddScoped<IValidatorExecutor, ValidatorExecutor>()
-            .AddScoped<IValidatingQueryExecutor, ValidatingQueryExecutor>() 
-            .AddScoped<IValidatingCommandExecutor, ValidatingCommandExecutor>()
+            .AddScoped<IQueryExecutor, ValidatingQueryExecutor>(x => {
+                return new ValidatingQueryExecutor(
+                    (IQueryExecutor)x.GetRequiredService(queryExecutorType),
+                    x.GetRequiredService<IValidatorExecutor>()
+                    );
+            }) 
+            .AddScoped<ICommandExecutor, ValidatingCommandExecutor>(x => {
+                return new ValidatingCommandExecutor(
+                    (ICommandExecutor)x.GetRequiredService(commandExecutorType),
+                    x.GetRequiredService<IValidatorExecutor>()
+                    );
+            })
             .AddCqrsValidationHandlers();
 
 

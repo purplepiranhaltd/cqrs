@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using PurplePiranha.Cqrs.Extensions;
 using PurplePiranha.Cqrs.Validation.Extensions;
 using PurplePiranha.Cqrs.Validation.Tests.TestClasses.Queries;
 using PurplePiranha.Cqrs.Validation.Validators;
@@ -12,7 +13,7 @@ public class ValidatorFactoryUnitTest
     public ValidatorFactoryUnitTest()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddCqrsWithValidation();
+        serviceCollection.AddCqrs().WithCqrsValidation();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _queryValidationHandlerFactory = serviceProvider.GetRequiredService<IValidatorFactory>();
     }

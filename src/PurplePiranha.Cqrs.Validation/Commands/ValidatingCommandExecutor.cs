@@ -9,8 +9,9 @@ using ValidationFailure = PurplePiranha.Cqrs.Validation.Failures.ValidationFailu
 
 namespace PurplePiranha.Cqrs.Validation.Commands
 {
-    public class ValidatingCommandExecutor : CommandExecutor, IValidatingCommandExecutor
+    public class ValidatingCommandExecutor : ICommandExecutor
     {
+        private readonly ICommandExecutor _commandExecutor;
         private readonly IValidatorExecutor _validatorExecutor;
 
 #nullable disable
@@ -29,17 +30,21 @@ namespace PurplePiranha.Cqrs.Validation.Commands
                 );
 #nullable enable
 
-        public ValidatingCommandExecutor(IValidatorExecutor validatorExecutor, ICommandHandlerFactory commandHandlerFactory) : base(commandHandlerFactory)
+        public ValidatingCommandExecutor(
+            ICommandExecutor commandExecutor,
+            IValidatorExecutor validatorExecutor
+            )
         {
+            _commandExecutor = commandExecutor;
             _validatorExecutor = validatorExecutor;
         }
 
-        async Task<Result> IValidatingCommandExecutor.ExecuteAsync<TCommand>(TCommand command)
+        public async Task<Result> ExecuteAsync<TCommand>(TCommand command) where TCommand : ICommand
         {
             return await PerformExecutionAsync<TCommand>(command);
         }
 
-        async Task<Result<TResult>> IValidatingCommandExecutor.ExecuteAsync<TResult>(ICommand<TResult> command)
+        public async Task<Result<TResult>> ExecuteAsync<TResult>(ICommand<TResult> command)
         {
             return await CallPerformExecuteTAsync<TResult>(command);
         }
@@ -107,7 +112,7 @@ namespace PurplePiranha.Cqrs.Validation.Commands
                     return Result.FailureResult(ValidationFailure.CreateForCommand<TCommand, TResult>(validationResult));
             }
 
-            return await base.ExecuteAsync(query);
+            return await _commandExecutor.ExecuteAsync(query);
         }
 
         private async Task<Result> PerformExecutionAsync<TCommand>(TCommand query) where TCommand : ICommand
@@ -120,7 +125,7 @@ namespace PurplePiranha.Cqrs.Validation.Commands
                     return Result.FailureResult(ValidationFailure.CreateForCommand<TCommand>(validationResult));
             }            
 
-            return await base.ExecuteAsync(query);
+            return await _commandExecutor.ExecuteAsync(query);
         }
 
         /// <summary>
