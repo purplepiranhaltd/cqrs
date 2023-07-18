@@ -27,9 +27,9 @@ public class HandlerRegistrar
         var implementationTypes = GetCommandHandlerTypes();
         foreach (var implementationType in implementationTypes)
         {
-            var serviceType = GetCommandHandlerInterfaceType(implementationType);
+            var serviceTypes = GetCommandHandlerInterfaceType(implementationType);
 
-            if (serviceType != null)
+            foreach(var serviceType in serviceTypes)
                 services.AddScoped(serviceType, implementationType);
         }
     }
@@ -64,9 +64,9 @@ public class HandlerRegistrar
     /// </summary>
     /// <param name="commandHandlerType">Command handler implementation type</param>
     /// <returns>Command handler service interface type</returns>
-    private Type? GetCommandHandlerInterfaceType(Type commandHandlerType)
+    private IEnumerable<Type> GetCommandHandlerInterfaceType(Type commandHandlerType)
     {
-        return commandHandlerType.FindInterfaces(filter, _handlerTypes).FirstOrDefault();
+        return commandHandlerType.FindInterfaces(filter, _handlerTypes).AsEnumerable();
     }
 
     private static TypeFilter filter = new TypeFilter((typeObj, criteriaObj) =>
