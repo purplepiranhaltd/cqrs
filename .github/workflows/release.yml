@@ -44,6 +44,8 @@ jobs:
       run: dotnet pack PurplePiranha.Cqrs/PurplePiranha.Cqrs.csproj --configuration Release /p:Version=${VERSION} --no-build --output ${{ env.NuGetDirectory }} --include-symbols -p:SymbolPackageFormat=snupkg
     - name: Create Nuget Package (PurplePiranha.Cqrs.Validation)
       run: dotnet pack PurplePiranha.Cqrs.Validation/PurplePiranha.Cqrs.Validation.csproj --configuration Release /p:Version=${VERSION} --no-build --output ${{ env.NuGetDirectory }} --include-symbols -p:SymbolPackageFormat=snupkg
+    - name: Create Nuget Package (PurplePiranha.Cqrs.Permissions)
+      run: dotnet pack PurplePiranha.Cqrs.Permissions/PurplePiranha.Cqrs.Permissions.csproj --configuration Release /p:Version=${VERSION} --no-build --output ${{ env.NuGetDirectory }} --include-symbols -p:SymbolPackageFormat=snupkg
     - name: Push Nuget Package
       run: dotnet nuget push ${{ env.NuGetDirectory }}/*.nupkg --api-key $API_KEY --source $SOURCE
       env:
