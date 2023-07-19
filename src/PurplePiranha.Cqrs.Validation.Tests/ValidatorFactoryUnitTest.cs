@@ -13,7 +13,7 @@ public class ValidatorFactoryUnitTest
     public ValidatorFactoryUnitTest()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddCqrs().WithCqrsValidation();
+        serviceCollection.AddCqrs().WithCqrsValidationModule();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _queryValidationHandlerFactory = serviceProvider.GetRequiredService<IValidatorFactory>();
     }

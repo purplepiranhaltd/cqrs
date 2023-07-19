@@ -17,7 +17,7 @@ public class QueryExecutorWithValidationUnitTests
     public QueryExecutorWithValidationUnitTests()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddCqrs().WithCqrsValidation();
+        serviceCollection.AddCqrs().WithCqrsValidationModule();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _queryExecutor = serviceProvider.GetRequiredService<IQueryExecutor>();
     }

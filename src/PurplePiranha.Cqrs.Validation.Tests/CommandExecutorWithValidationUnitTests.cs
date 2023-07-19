@@ -17,7 +17,7 @@ public class CommandExecutorWithValidationUnitTests
     public CommandExecutorWithValidationUnitTests()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddCqrs().WithCqrsValidation();
+        serviceCollection.AddCqrs().WithCqrsValidationModule();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _commandExecutor = serviceProvider.GetRequiredService<ICommandExecutor>();
     }

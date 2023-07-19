@@ -14,63 +14,61 @@ public static class ServiceCollectionExtensions
 {
     #region Extension Methods
 
-    public static IServiceCollection WithCqrsValidation(this IServiceCollection services)
+    public static IServiceCollection WithCqrsValidationModule(this IServiceCollection services)
     {
-        // Get the currently registered IQueryExecutor and then register it's concrete type instead
-        var queryExecutorType = services.Where(x => x.ServiceType == typeof(IQueryExecutor)).Select(x => x.ImplementationType).FirstOrDefault();
+        // Get the current command and query executor types.
+        // We will need to pass these to the constructors of our new ones.
+        var helper = new ServiceRegistrationHelper(services);
+        var queryExecutorType = helper.GetCurrentImplementationType<IQueryExecutor>();
+        var commandExecutorType = helper.GetCurrentImplementationType<ICommandExecutor>();
 
-        if (queryExecutorType is null)
-            throw new ArgumentNullException(nameof(queryExecutorType));
+        // Remove the current command and query executor types registered by interface.
+        // They will still be accessible as they are also registered via their concrete type.
+        services.RemoveAll(typeof(IQueryExecutor));
+        services.RemoveAll(typeof(ICommandExecutor));
 
-        services.AddScoped(queryExecutorType);
-        services.RemoveAll<IQueryExecutor>();
-
-        // Get the currently registered ICommandExecutor and then register it's concrete type instead
-        var commandExecutorType = services.Where(x => x.ServiceType == typeof(ICommandExecutor)).Select(x => x.ImplementationType).FirstOrDefault();
-
-        if (commandExecutorType is null)
-            throw new ArgumentNullException(nameof(commandExecutorType));
-
-        services.AddScoped(commandExecutorType);
-        services.RemoveAll<ICommandExecutor>();
-
+        // Register validator factory and executor
         services
             .AddScoped<IValidatorFactory, ValidatorFactory>()
-            .AddScoped<IValidatorExecutor, ValidatorExecutor>()
+            .AddScoped<IValidatorExecutor, ValidatorExecutor>();
+
+        // Register the validating command and query executors by interface.
+        // We pass the previous command and query executors to them.
+        services
             .AddScoped<IQueryExecutor, ValidatingQueryExecutor>(x => {
                 return new ValidatingQueryExecutor(
                     (IQueryExecutor)x.GetRequiredService(queryExecutorType),
                     x.GetRequiredService<IValidatorExecutor>()
                     );
-            }) 
+            })
             .AddScoped<ICommandExecutor, ValidatingCommandExecutor>(x => {
                 return new ValidatingCommandExecutor(
                     (ICommandExecutor)x.GetRequiredService(commandExecutorType),
                     x.GetRequiredService<IValidatorExecutor>()
                     );
+            });
+
+        // Also register the validator command and query executors by their concrete type.
+        // This allows them to still be accessible if we need to override them.
+        services
+            .AddScoped<ValidatingQueryExecutor>(x => {
+                return new ValidatingQueryExecutor(
+                    (IQueryExecutor)x.GetRequiredService(queryExecutorType),
+                    x.GetRequiredService<IValidatorExecutor>()
+                    );
             })
-            .AddCqrsValidationHandlers();
+            .AddScoped<ValidatingCommandExecutor>(x => {
+                return new ValidatingCommandExecutor(
+                    (ICommandExecutor)x.GetRequiredService(commandExecutorType),
+                    x.GetRequiredService<IValidatorExecutor>()
+                    );
+            });
 
-
+        // Register all validators
+        services.AddCqrsHandlers(typeof(FluentValidation.IValidator<>));
 
         return services;
     }
 
     #endregion Extension Methods
-
-    #region Helpers
-
-    private static IServiceCollection AddCqrsValidationHandlers(this IServiceCollection services)
-    {
-        var handlerRegistrar = new HandlerRegistrar(new Type[]
-        {
-        typeof(FluentValidation.IValidator<>)
-        });
-
-        handlerRegistrar.RegisterHandlers(services);
-
-        return services;
-    }
-
-    #endregion Helpers
 }

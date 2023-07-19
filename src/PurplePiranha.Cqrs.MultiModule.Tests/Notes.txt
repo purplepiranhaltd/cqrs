@@ -1,0 +1,28 @@
+﻿The purpose of these tests is to ensure that when multiple modules are used (e.g. Permissions and Validation) that the following occurs:
+a) All modules are triggered where necessary
+b) Modules are triggered in the correct order *
+
+* Module order
+--------------
+When multiple modules are registered the order in which they are registered defines the order in which they will be executed, 
+with the last registered module executing first.
+
+Example 1
+---------
+services
+   .AddCqrs()
+   .WithCqrsValidationModule()
+   .WithCqrsPermissionsModule();
+
+This will execute the permission check first, move to the validation check if the permission check is successful 
+and then execute the command/query if validation check is successful.
+
+Example 2
+---------
+services
+   .AddCqrs()
+   .WithCqrsPermissionsModule()
+   .WithCqrsValidationModule();
+
+This will execute the validation check first, move to the permission check if the validation check is successful 
+and then execute the command/query if permission check is successful.

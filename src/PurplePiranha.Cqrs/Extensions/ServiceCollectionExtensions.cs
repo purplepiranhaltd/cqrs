@@ -17,11 +17,21 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddCqrs(this IServiceCollection services)
     {
-        services.AddScoped<ICommandHandlerFactory, CommandHandlerFactory>();
+        // Register default command and query executors by interface
         services.AddScoped<ICommandExecutor, CommandExecutor>();
-        services.AddScoped<IQueryHandlerFactory, QueryHandlerFactory>();
         services.AddScoped<IQueryExecutor, QueryExecutor>();
-        services.AddCqrsHandlers();
+
+        // Register default command and query executors by concrete type.
+        // This allows them to still be accessible if we need to override them.
+        services.AddScoped<CommandExecutor>();
+        services.AddScoped<QueryExecutor>();
+
+        // Register factories
+        services.AddScoped<ICommandHandlerFactory, CommandHandlerFactory>();
+        services.AddScoped<IQueryHandlerFactory, QueryHandlerFactory>();
+
+        // Register all command and query handlers
+        services.AddCqrsHandlers(typeof(ICommandHandler<>), typeof(ICommandHandler<,>), typeof(IQueryHandler<,>));
         return services;
     }
 
@@ -34,17 +44,10 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The services.</param>
     /// <returns></returns>
-    private static IServiceCollection AddCqrsHandlers(this IServiceCollection services)
+    public static IServiceCollection AddCqrsHandlers(this IServiceCollection services, params Type[] handlerTypes)
     {
-        var handlerRegistrar = new HandlerRegistrar(new Type[]
-        {
-            typeof(ICommandHandler<>),
-            typeof(ICommandHandler<,>),
-            typeof(IQueryHandler<,>)
-        });
-
+        var handlerRegistrar = new HandlerRegistrar(handlerTypes);
         handlerRegistrar.RegisterHandlers(services);
-
         return services;
     }
 
