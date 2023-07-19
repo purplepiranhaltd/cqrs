@@ -5,6 +5,7 @@ using PurplePiranha.Cqrs.Extensions;
 using PurplePiranha.Cqrs.Permissions.Abstractions;
 using PurplePiranha.Cqrs.Permissions.Executors;
 using PurplePiranha.Cqrs.Permissions.Factories;
+using PurplePiranha.Cqrs.Permissions.Options;
 using PurplePiranha.Cqrs.Queries;
 using PurplePiranha.Cqrs.ServiceRegistration;
 using System;
@@ -13,13 +14,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Permissions.Extensions
+namespace PurplePiranha.Cqrs.Permissions.ServiceRegistration
 {
     public static class ServiceCollectionExtensions
     {
         #region Extension Methods
-        public static IServiceCollection WithCqrsPermissionsModule(this IServiceCollection services)
+        public static IServiceCollection WithCqrsPermissionsModule(
+            this IServiceCollection services, CqrsPermissionsOptions? options = null
+            )
         {
+            if (options is null)
+                options = new CqrsPermissionsOptions();
+
             // Get the current command and query executor types.
             // We will need to pass these to the constructors of our new ones.
             var helper = new ServiceRegistrationHelper(services);
@@ -43,38 +49,50 @@ namespace PurplePiranha.Cqrs.Permissions.Extensions
                 {
                     return new PermissionCheckingQueryExecutor(
                         (IQueryExecutor)x.GetRequiredService(queryExecutorType),
-                        x.GetRequiredService<IPermissionCheckerExecutor>()
+                        x.GetRequiredService<IPermissionCheckerExecutor>(),
+                        x.GetRequiredService<NotAuthorisedFailureFactory>()
                         );
                 })
                 .AddScoped<ICommandExecutor, PermissionCheckingCommandExecutor>(x =>
                 {
                     return new PermissionCheckingCommandExecutor(
                         (ICommandExecutor)x.GetRequiredService(commandExecutorType),
-                        x.GetRequiredService<IPermissionCheckerExecutor>()
+                        x.GetRequiredService<IPermissionCheckerExecutor>(),
+                        x.GetRequiredService<NotAuthorisedFailureFactory>()
                         );
                 });
 
             // Also register the permission checking command and query executors by their concrete type.
             // This allows them to still be accessible if we need to override them.
             services
-                .AddScoped<PermissionCheckingQueryExecutor>(x =>
+                .AddScoped(x =>
                 {
                     return new PermissionCheckingQueryExecutor(
                         (IQueryExecutor)x.GetRequiredService(queryExecutorType),
-                        x.GetRequiredService<IPermissionCheckerExecutor>()
+                        x.GetRequiredService<IPermissionCheckerExecutor>(),
+                        x.GetRequiredService<NotAuthorisedFailureFactory>()
                         );
                 })
-                .AddScoped<PermissionCheckingCommandExecutor>(x =>
+                .AddScoped(x =>
                 {
                     return new PermissionCheckingCommandExecutor(
                         (ICommandExecutor)x.GetRequiredService(commandExecutorType),
-                        x.GetRequiredService<IPermissionCheckerExecutor>()
+                        x.GetRequiredService<IPermissionCheckerExecutor>(),
+                        x.GetRequiredService<NotAuthorisedFailureFactory>()
                         );
                 });
 
             // Register all permission checkers
             services
                 .AddCqrsHandlers(typeof(IPermissionChecker<>));
+
+            // Register the NotAuthorisedFailureFactory.
+            // This allows the use of a custom failure type which is useful in a system that
+            // already has a failure defined for dealing with a Not Authorised scenario.
+            services.AddScoped<NotAuthorisedFailureFactory>(x => {
+                return new NotAuthorisedFailureFactory(options.NotAuthorisedFailureType);
+            });
+
 
             return services;
         }

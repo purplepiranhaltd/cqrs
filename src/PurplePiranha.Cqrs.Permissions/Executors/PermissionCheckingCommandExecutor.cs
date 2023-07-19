@@ -1,6 +1,7 @@
 ﻿using PurplePiranha.Cqrs.Commands;
 using PurplePiranha.Cqrs.Permissions.Abstractions;
 using PurplePiranha.Cqrs.Permissions.Decorators;
+using PurplePiranha.Cqrs.Permissions.Factories;
 using PurplePiranha.Cqrs.Permissions.Failures;
 using PurplePiranha.FluentResults.Results;
 using System;
@@ -17,11 +18,17 @@ namespace PurplePiranha.Cqrs.Permissions.Executors
     {
         private readonly ICommandExecutor _commandExecutor;
         private readonly IPermissionCheckerExecutor _permissionCheckerExecutor;
+        private readonly NotAuthorisedFailureFactory _notAuthorisedFailureFactory;
 
-        public PermissionCheckingCommandExecutor(ICommandExecutor commandExecutor, IPermissionCheckerExecutor permissionCheckerExecutor)
+        public PermissionCheckingCommandExecutor(
+            ICommandExecutor commandExecutor, 
+            IPermissionCheckerExecutor permissionCheckerExecutor,
+            NotAuthorisedFailureFactory notAuthorisedFailureFactory
+            )
         {
             _commandExecutor = commandExecutor;
             _permissionCheckerExecutor = permissionCheckerExecutor;
+            _notAuthorisedFailureFactory = notAuthorisedFailureFactory;
         }
         public async Task<Result> ExecuteAsync<TCommand>(TCommand command) where TCommand : ICommand
         {
@@ -91,7 +98,7 @@ namespace PurplePiranha.Cqrs.Permissions.Executors
                 var hasPermission = await CallPerformPermissionCheckingAsync(command);
 
                 if (!hasPermission)
-                    return Result.FailureResult<TResult>(new NotAuthorisedFailure());
+                    return Result.FailureResult<TResult>(_notAuthorisedFailureFactory.GetNotAuthorisedFailure());
             }
 
             return await _commandExecutor.ExecuteAsync(command);
@@ -104,7 +111,7 @@ namespace PurplePiranha.Cqrs.Permissions.Executors
                 var hasPermission = await CallPerformPermissionCheckingAsync(command);
 
                 if (!hasPermission)
-                    return Result.FailureResult(new NotAuthorisedFailure());
+                    return Result.FailureResult(_notAuthorisedFailureFactory.GetNotAuthorisedFailure());
             }
 
             return await _commandExecutor.ExecuteAsync(command);

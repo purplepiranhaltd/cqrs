@@ -1,5 +1,6 @@
 ﻿using PurplePiranha.Cqrs.Permissions.Abstractions;
 using PurplePiranha.Cqrs.Permissions.Decorators;
+using PurplePiranha.Cqrs.Permissions.Factories;
 using PurplePiranha.Cqrs.Permissions.Failures;
 using PurplePiranha.Cqrs.Queries;
 using PurplePiranha.FluentResults.Results;
@@ -18,13 +19,19 @@ namespace PurplePiranha.Cqrs.Permissions.Executors
         #region Fields
         private readonly IQueryExecutor _queryExecutor;
         private readonly IPermissionCheckerExecutor _permissionCheckerExecutor;
+        private readonly NotAuthorisedFailureFactory _notAuthorisedFailureFactory;
         #endregion
 
         #region Ctr
-        public PermissionCheckingQueryExecutor(IQueryExecutor queryExecutor, IPermissionCheckerExecutor permissionCheckerExecutor)
+        public PermissionCheckingQueryExecutor(
+            IQueryExecutor queryExecutor, 
+            IPermissionCheckerExecutor permissionCheckerExecutor,
+            NotAuthorisedFailureFactory notAuthorisedFailureFactory
+            )
         {
             _queryExecutor = queryExecutor;
             _permissionCheckerExecutor = permissionCheckerExecutor;
+            _notAuthorisedFailureFactory = notAuthorisedFailureFactory;
         }
         #endregion
         #region Methods
@@ -94,7 +101,7 @@ namespace PurplePiranha.Cqrs.Permissions.Executors
                 var hasPermission = await CallPerformPermissionCheckingAsync(query);
 
                 if (!hasPermission)
-                    return Result.FailureResult(new NotAuthorisedFailure());
+                    return Result.FailureResult(_notAuthorisedFailureFactory.GetNotAuthorisedFailure());
             }
 
             return await _queryExecutor.ExecuteAsync(query);
