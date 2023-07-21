@@ -5,19 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.ValidationThenPermissions.CommandT
+namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.ValidationThenPermissions.CommandT;
+
+public class VThenPTestCommandTPermissionChecker : IPermissionChecker<VThenPTestCommandT>
 {
-    public class VThenPTestCommandTPermissionChecker : IPermissionChecker<VThenPTestCommandT>
+    public Task<bool> HasPermission(VThenPTestCommandT obj)
     {
-        public Task<bool> HasPermission(VThenPTestCommandT obj)
-        {
-            // Ensure that permission checker is not called before validator
-            Assert.That(obj.SpecialNumber, Is.Not.EqualTo(200));
+        // Ensure that permission checker is not called before validator
+        Assert.That(obj.SpecialNumber, Is.Not.EqualTo(200));
 
-            if (obj.SpecialNumber == 100)
-                return Task.FromResult(false);
+        if (obj.SpecialNumber == 100)
+            return Task.FromResult(false);
 
-            return Task.FromResult(true);
-        }
+        return Task.FromResult(true);
     }
 }

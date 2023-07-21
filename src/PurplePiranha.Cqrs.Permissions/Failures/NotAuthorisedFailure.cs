@@ -5,15 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Permissions.Failures
+namespace PurplePiranha.Cqrs.Permissions.Failures;
+
+public class NotAuthorisedFailure : Failure
 {
-    public class NotAuthorisedFailure : Failure
+    public NotAuthorisedFailure() : 
+        base(
+            $"PurplePiranha.Cqrs.Permissions.{ nameof(NotAuthorisedFailure) }", 
+            "Not authorised")
     {
-        public NotAuthorisedFailure() : 
-            base(
-                $"PurplePiranha.Cqrs.Permissions.{ nameof(NotAuthorisedFailure) }", 
-                "Not authorised")
-        {
-        }
     }
 }

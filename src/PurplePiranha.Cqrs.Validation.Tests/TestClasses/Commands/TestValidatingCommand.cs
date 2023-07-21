@@ -1,9 +1,8 @@
 ﻿using PurplePiranha.Cqrs.Commands;
 using PurplePiranha.Cqrs.Validation.Validators;
 
-namespace PurplePiranha.Cqrs.Validation.Tests.TestClasses.Commands
+namespace PurplePiranha.Cqrs.Validation.Tests.TestClasses.Commands;
+
+public record TestValidatingCommand(int IMustNotBe100) : ICommand, IValidationRequired
 {
-    public record TestValidatingCommand(int IMustNotBe100) : ICommand, IValidationRequired
-    {
-    }
 }

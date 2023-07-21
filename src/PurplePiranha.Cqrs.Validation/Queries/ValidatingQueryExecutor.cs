@@ -7,120 +7,119 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using ValidationFailure = PurplePiranha.Cqrs.Validation.Failures.ValidationFailure;
 
-namespace PurplePiranha.Cqrs.Validation.Queries
+namespace PurplePiranha.Cqrs.Validation.Queries;
+
+public class ValidatingQueryExecutor : IQueryExecutor
 {
-    public class ValidatingQueryExecutor : IQueryExecutor
+
+    private readonly IQueryExecutor _queryExecutor;
+    private readonly IValidatorExecutor _validatorExecutor;
+
+#nullable disable
+    private static readonly MethodInfo PerformExecutionAsyncMethod =
+        typeof(ValidatingQueryExecutor)
+            .GetMethod(
+                nameof(PerformExecutionAsync),
+                BindingFlags.NonPublic | BindingFlags.Instance
+            );
+
+    private static readonly MethodInfo PerformValidatationAsyncMethod =
+        typeof(ValidatingQueryExecutor)
+            .GetMethod(
+                nameof(PerformValidatationAsync),
+                BindingFlags.NonPublic | BindingFlags.Instance
+            );
+#nullable enable
+
+    public ValidatingQueryExecutor(
+        IQueryExecutor queryExecutor,
+        IValidatorExecutor validatorExecutor)
     {
+        _queryExecutor = queryExecutor;
+        _validatorExecutor = validatorExecutor;
+    }
 
-        private readonly IQueryExecutor _queryExecutor;
-        private readonly IValidatorExecutor _validatorExecutor;
+    public async Task<Result<TResult>> ExecuteAsync<TResult>(IQuery<TResult> query)
+    {
+        return await CallPerformExecuteAsync<TResult>(query);
+    }
+
+    private async Task<Result<TResult>> CallPerformExecuteAsync<TResult>(IQuery<TResult> query)
+    {
+        var queryType = query.GetType();
+        var resultType = typeof(TResult);
+
+        try
+        {
+            var method = PerformExecutionAsyncMethod.MakeGenericMethod(queryType, resultType);
 
 #nullable disable
-        private static readonly MethodInfo PerformExecutionAsyncMethod =
-            typeof(ValidatingQueryExecutor)
-                .GetMethod(
-                    nameof(PerformExecutionAsync),
-                    BindingFlags.NonPublic | BindingFlags.Instance
-                );
-
-        private static readonly MethodInfo PerformValidatationAsyncMethod =
-            typeof(ValidatingQueryExecutor)
-                .GetMethod(
-                    nameof(PerformValidatationAsync),
-                    BindingFlags.NonPublic | BindingFlags.Instance
-                );
+            return await (Task<Result<TResult>>)method.Invoke(this, new object[] { query });
 #nullable enable
 
-        public ValidatingQueryExecutor(
-            IQueryExecutor queryExecutor,
-            IValidatorExecutor validatorExecutor)
-        {
-            _queryExecutor = queryExecutor;
-            _validatorExecutor = validatorExecutor;
         }
-
-        public async Task<Result<TResult>> ExecuteAsync<TResult>(IQuery<TResult> query)
+        catch (TargetInvocationException ex)
         {
-            return await CallPerformExecuteAsync<TResult>(query);
+            if (ex.InnerException is null)
+                throw;
+
+            var info = ExceptionDispatchInfo.Capture(ex.InnerException);
+            info.Throw();
+
+            // compiler requires assignment - an exception is always thrown so we can never get here
+            return default;
         }
+    }
 
-        private async Task<Result<TResult>> CallPerformExecuteAsync<TResult>(IQuery<TResult> query)
+    
+
+    private async Task<ValidationResult> CallPerformValidatationAsync<TQuery>(TQuery query)
+    {
+        var queryType = query.GetType();
+
+        try
         {
-            var queryType = query.GetType();
-            var resultType = typeof(TResult);
-
-            try
-            {
-                var method = PerformExecutionAsyncMethod.MakeGenericMethod(queryType, resultType);
+            var method = PerformValidatationAsyncMethod.MakeGenericMethod(queryType);
 
 #nullable disable
-                return await (Task<Result<TResult>>)method.Invoke(this, new object[] { query });
+            return await (Task<ValidationResult>)method.Invoke(this, new object[] { query });
 #nullable enable
 
-            }
-            catch (TargetInvocationException ex)
-            {
-                if (ex.InnerException is null)
-                    throw;
-
-                var info = ExceptionDispatchInfo.Capture(ex.InnerException);
-                info.Throw();
-
-                // compiler requires assignment - an exception is always thrown so we can never get here
-                return default;
-            }
         }
-
-        
-
-        private async Task<ValidationResult> CallPerformValidatationAsync<TQuery>(TQuery query)
+        catch (TargetInvocationException ex)
         {
-            var queryType = query.GetType();
+            if (ex.InnerException is null)
+                throw;
 
-            try
-            {
-                var method = PerformValidatationAsyncMethod.MakeGenericMethod(queryType);
+            var info = ExceptionDispatchInfo.Capture(ex.InnerException);
+            info.Throw();
 
-#nullable disable
-                return await (Task<ValidationResult>)method.Invoke(this, new object[] { query });
-#nullable enable
-
-            }
-            catch (TargetInvocationException ex)
-            {
-                if (ex.InnerException is null)
-                    throw;
-
-                var info = ExceptionDispatchInfo.Capture(ex.InnerException);
-                info.Throw();
-
-                // compiler requires assignment - an exception is always thrown so we can never get here
-                return default;
-            }
+            // compiler requires assignment - an exception is always thrown so we can never get here
+            return default;
         }
+    }
 
-        private async Task<Result<TResult>> PerformExecutionAsync<TQuery, TResult>(TQuery query) where TQuery : IQuery<TResult>
+    private async Task<Result<TResult>> PerformExecutionAsync<TQuery, TResult>(TQuery query) where TQuery : IQuery<TResult>
+    {
+        if (query is IValidationRequired)
         {
-            if (query is IValidationRequired)
-            {
-                var validationResult = await CallPerformValidatationAsync(query);
+            var validationResult = await CallPerformValidatationAsync(query);
 
-                if (!validationResult.IsValid)
-                    return Result.FailureResult(ValidationFailure.CreateForQuery<TQuery, TResult>(validationResult));
-            }          
+            if (!validationResult.IsValid)
+                return Result.FailureResult(ValidationFailure.CreateForQuery<TQuery, TResult>(validationResult));
+        }          
 
-            return await _queryExecutor.ExecuteAsync(query);
-        }
+        return await _queryExecutor.ExecuteAsync(query);
+    }
 
-        /// <summary>
-        /// Performs the validation
-        /// </summary>
-        /// <typeparam name="TQuery">The type of the query.</typeparam>
-        /// <param name="query">The query.</param>
-        /// <returns></returns>
-        private async Task<ValidationResult> PerformValidatationAsync<TQuery>(TQuery query) where TQuery : IValidationRequired
-        {
-            return await _validatorExecutor.ExecuteAsync(query);
-        }
+    /// <summary>
+    /// Performs the validation
+    /// </summary>
+    /// <typeparam name="TQuery">The type of the query.</typeparam>
+    /// <param name="query">The query.</param>
+    /// <returns></returns>
+    private async Task<ValidationResult> PerformValidatationAsync<TQuery>(TQuery query) where TQuery : IValidationRequired
+    {
+        return await _validatorExecutor.ExecuteAsync(query);
     }
 }

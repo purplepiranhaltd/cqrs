@@ -7,19 +7,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.ValidationThenPermissions.Command
+namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.ValidationThenPermissions.Command;
+
+/// <summary>
+/// /// Test Query
+/// Uses special numbers:
+/// 100 Not Authorised
+/// 200 Validation Failure
+/// </summary>
+/// <seealso cref="ICommand" />
+/// <seealso cref="IValidationRequired" />
+/// <seealso cref="IPermissionRequired" />
+/// <seealso cref="IEquatable&lt;ValidationAndPermissionsTestCommand&gt;" />
+public record VThenPTestCommand(int SpecialNumber) : ICommand, IValidationRequired, IPermissionRequired
 {
-    /// <summary>
-    /// /// Test Query
-    /// Uses special numbers:
-    /// 100 Not Authorised
-    /// 200 Validation Failure
-    /// </summary>
-    /// <seealso cref="ICommand" />
-    /// <seealso cref="IValidationRequired" />
-    /// <seealso cref="IPermissionRequired" />
-    /// <seealso cref="IEquatable&lt;ValidationAndPermissionsTestCommand&gt;" />
-    public record VThenPTestCommand(int SpecialNumber) : ICommand, IValidationRequired, IPermissionRequired
-    {
-    }
 }

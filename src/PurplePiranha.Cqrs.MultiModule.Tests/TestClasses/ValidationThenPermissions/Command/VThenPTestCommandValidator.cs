@@ -5,13 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.ValidationThenPermissions.Command
+namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.ValidationThenPermissions.Command;
+
+public class VThenPTestCommandValidator : AbstractValidator<VThenPTestCommand>
 {
-    public class VThenPTestCommandValidator : AbstractValidator<VThenPTestCommand>
+    public VThenPTestCommandValidator()
     {
-        public VThenPTestCommandValidator()
-        {
-            RuleFor(c => c.SpecialNumber).NotEqual(200);
-        }
+        RuleFor(c => c.SpecialNumber).NotEqual(200);
     }
 }

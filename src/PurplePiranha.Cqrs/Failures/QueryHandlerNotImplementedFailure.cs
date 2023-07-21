@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Failures
+namespace PurplePiranha.Cqrs.Failures;
+
+public class QueryHandlerNotImplementedFailure : Failure
 {
-    public class QueryHandlerNotImplementedFailure : Failure
+    public QueryHandlerNotImplementedFailure(string queryName) : base($"PurplePiranha.Cqrs.{ nameof(QueryHandlerNotImplementedFailure) }", $"No query handler was found to process the command { queryName }")
     {
-        public QueryHandlerNotImplementedFailure(string queryName) : base($"PurplePiranha.Cqrs.{ nameof(QueryHandlerNotImplementedFailure) }", $"No query handler was found to process the command { queryName }")
-        {
-        }
     }
 }

@@ -7,25 +7,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Permissions.Factories
+namespace PurplePiranha.Cqrs.Permissions.Factories;
+
+public class PermissionCheckerFactory : IPermissionCheckerFactory
 {
-    public class PermissionCheckerFactory : IPermissionCheckerFactory
+    private readonly IServiceProvider _serviceProvider;
+
+    public PermissionCheckerFactory(IServiceProvider serviceProvider)
     {
-        private readonly IServiceProvider _serviceProvider;
+        _serviceProvider = serviceProvider;
+    }
 
-        public PermissionCheckerFactory(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
+    public IPermissionChecker<T> CreatePermissionChecker<T>() where T : IPermissionRequired
+    {
+        var handler = _serviceProvider.GetService(typeof(IPermissionChecker<T>));
 
-        public IPermissionChecker<T> CreatePermissionChecker<T>() where T : IPermissionRequired
-        {
-            var handler = _serviceProvider.GetService(typeof(IPermissionChecker<T>));
+        if (handler is null)
+            throw PermissionCheckerNotImplementedException.Create<T>();
 
-            if (handler is null)
-                throw PermissionCheckerNotImplementedException.Create<T>();
-
-            return (IPermissionChecker<T>)handler;
-        }
+        return (IPermissionChecker<T>)handler;
     }
 }

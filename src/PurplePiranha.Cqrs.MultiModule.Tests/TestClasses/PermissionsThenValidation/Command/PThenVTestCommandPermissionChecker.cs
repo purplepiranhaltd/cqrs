@@ -5,16 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.PermissionsThenValidation.Command
-{
-    public class PThenVTestCommandPermissionChecker : IPermissionChecker<PThenVTestCommand>
-    {
-        public Task<bool> HasPermission(PThenVTestCommand obj)
-        {
-            if (obj.SpecialNumber == 100)
-                return Task.FromResult(false);
+namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.PermissionsThenValidation.Command;
 
-            return Task.FromResult(true);
-        }
+public class PThenVTestCommandPermissionChecker : IPermissionChecker<PThenVTestCommand>
+{
+    public Task<bool> HasPermission(PThenVTestCommand obj)
+    {
+        if (obj.SpecialNumber == 100)
+            return Task.FromResult(false);
+
+        return Task.FromResult(true);
     }
 }

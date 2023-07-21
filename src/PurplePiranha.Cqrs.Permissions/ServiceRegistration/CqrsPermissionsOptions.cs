@@ -5,10 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Permissions.Options
+namespace PurplePiranha.Cqrs.Permissions.Options;
+
+public class CqrsPermissionsOptions
 {
-    public class CqrsPermissionsOptions
-    {
-        public Type NotAuthorisedFailureType { get; set; } = typeof(NotAuthorisedFailure);
-    }
+    public Type NotAuthorisedFailureType { get; set; } = typeof(NotAuthorisedFailure);
 }

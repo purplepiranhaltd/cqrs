@@ -5,10 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Permissions.Abstractions
+namespace PurplePiranha.Cqrs.Permissions.Abstractions;
+
+public interface IPermissionChecker<T>
 {
-    public interface IPermissionChecker<T>
-    {
-        Task<bool> HasPermission(T obj);
-    }
+    Task<bool> HasPermission(T obj);
 }

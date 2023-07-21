@@ -8,28 +8,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Permissions.Executors
-{
-    public class PermissionCheckerExecutor : IPermissionCheckerExecutor
-    {
-        private readonly IPermissionCheckerFactory _factory;
+namespace PurplePiranha.Cqrs.Permissions.Executors;
 
-        public PermissionCheckerExecutor(IPermissionCheckerFactory factory) 
+public class PermissionCheckerExecutor : IPermissionCheckerExecutor
+{
+    private readonly IPermissionCheckerFactory _factory;
+
+    public PermissionCheckerExecutor(IPermissionCheckerFactory factory) 
+    {
+        _factory = factory;
+    }
+    public async Task<bool> ExecuteAsync<T>(T obj) where T : IPermissionRequired
+    {
+        try
         {
-            _factory = factory;
+            var handler = _factory.CreatePermissionChecker<T>();
+            return await handler.HasPermission(obj);
         }
-        public async Task<bool> ExecuteAsync<T>(T obj) where T : IPermissionRequired
+        catch (PermissionCheckerNotImplementedException e)
         {
-            try
-            {
-                var handler = _factory.CreatePermissionChecker<T>();
-                return await handler.HasPermission(obj);
-            }
-            catch (PermissionCheckerNotImplementedException e)
-            {
-                //TODO: Logging
-                throw;
-            }
+            //TODO: Logging
+            throw;
         }
     }
 }

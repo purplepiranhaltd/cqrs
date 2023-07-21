@@ -5,13 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.ValidationThenPermissions.Query
+namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.ValidationThenPermissions.Query;
+
+public class VThenPTestQueryValidator : AbstractValidator<VThenPTestQuery>
 {
-    public class VThenPTestQueryValidator : AbstractValidator<VThenPTestQuery>
+    public VThenPTestQueryValidator()
     {
-        public VThenPTestQueryValidator()
-        {
-            RuleFor(c => c.SpecialNumber).NotEqual(200);
-        }
+        RuleFor(c => c.SpecialNumber).NotEqual(200);
     }
 }

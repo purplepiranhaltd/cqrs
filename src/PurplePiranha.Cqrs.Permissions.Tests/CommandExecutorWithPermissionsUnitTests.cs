@@ -7,88 +7,87 @@ using PurplePiranha.Cqrs.Permissions.ServiceRegistration;
 using PurplePiranha.Cqrs.Permissions.Tests.TestClasses.Commands;
 using PurplePiranha.FluentResults.Results;
 
-namespace PurplePiranha.Cqrs.Permissions.Tests
+namespace PurplePiranha.Cqrs.Permissions.Tests;
+
+public class CommandExecutorWithPermissionsUnitTests
 {
-    public class CommandExecutorWithPermissionsUnitTests
+    private readonly ICommandExecutor _commandExecutor;
+
+    public CommandExecutorWithPermissionsUnitTests() 
     {
-        private readonly ICommandExecutor _commandExecutor;
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddCqrs().WithCqrsPermissionsModule();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        _commandExecutor = serviceProvider.GetRequiredService<ICommandExecutor>();
+    }
 
-        public CommandExecutorWithPermissionsUnitTests() 
-        {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddCqrs().WithCqrsPermissionsModule();
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            _commandExecutor = serviceProvider.GetRequiredService<ICommandExecutor>();
-        }
+    [SetUp]
+    public void Setup()
+    {
+    }
 
-        [SetUp]
-        public void Setup()
-        {
-        }
+    [Test]
+    public async Task CommandExecutorWithPermissions_RunsCommand()
+    {
+        var result = await _commandExecutor.ExecuteAsync(new TestPermissionCheckingCommand(4));
+        Assert.That(result.IsSuccess, Is.True);
+    }
 
-        [Test]
-        public async Task CommandExecutorWithPermissions_RunsCommand()
-        {
-            var result = await _commandExecutor.ExecuteAsync(new TestPermissionCheckingCommand(4));
-            Assert.That(result.IsSuccess, Is.True);
-        }
+    [Test]
+    public async Task CommandExecutorWithPermissions_RunsCommandWithResult()
+    {
+        var result = await _commandExecutor.ExecuteAsync(new TestPermissionCheckingCommandWithResult(4));
+        Assert.That(result.IsSuccess, Is.True);
+    }
 
-        [Test]
-        public async Task CommandExecutorWithPermissions_RunsCommandWithResult()
+    [Test]
+    public async Task CommandExecutorWithPermissions_ReturnsCorrectResult()
+    {
+        var result = await _commandExecutor.ExecuteAsync<int>(new TestPermissionCheckingCommandWithResult(4));
+        Assert.That(result.IsSuccess, Is.True);
+        result.OnSuccess(r =>
         {
-            var result = await _commandExecutor.ExecuteAsync(new TestPermissionCheckingCommandWithResult(4));
-            Assert.That(result.IsSuccess, Is.True);
-        }
+            Assert.That(r, Is.EqualTo(8));
+            Assert.Pass();
+        });
 
-        [Test]
-        public async Task CommandExecutorWithPermissions_ReturnsCorrectResult()
+        Assert.Fail();
+    }
+
+    [Test]
+    public async Task CommandExecutorWithPermissions_PerformsPermissionCheckingOnCommand()
+    {
+        var result = await _commandExecutor.ExecuteAsync(new TestPermissionCheckingCommand(100));
+        result.OnFailure(f =>
         {
-            var result = await _commandExecutor.ExecuteAsync<int>(new TestPermissionCheckingCommandWithResult(4));
-            Assert.That(result.IsSuccess, Is.True);
-            result.OnSuccess(r =>
+            if (f is NotAuthorisedFailure nof)
             {
-                Assert.That(r, Is.EqualTo(8));
                 Assert.Pass();
-            });
+            }
+        });
+        Assert.Fail();
+    }
 
-            Assert.Fail();
-        }
-
-        [Test]
-        public async Task CommandExecutorWithPermissions_PerformsPermissionCheckingOnCommand()
+    [Test]
+    public async Task CommandExecutorWithPermissions_PerformsPermissionCheckingOnCommandT()
+    {
+        var result = await _commandExecutor.ExecuteAsync(new TestPermissionCheckingCommandWithResult(100));
+        result.OnFailure(f =>
         {
-            var result = await _commandExecutor.ExecuteAsync(new TestPermissionCheckingCommand(100));
-            result.OnFailure(f =>
+            if (f is NotAuthorisedFailure nof)
             {
-                if (f is NotAuthorisedFailure nof)
-                {
-                    Assert.Pass();
-                }
-            });
-            Assert.Fail();
-        }
+                Assert.Pass();
+            }
+        });
+        Assert.Fail();
+    }
 
-        [Test]
-        public async Task CommandExecutorWithPermissions_PerformsPermissionCheckingOnCommandT()
+    [Test]
+    public async Task CommandExecutorWithPermissions_ThrowsIfPermissionCheckerDoesNotExist()
+    {
+        Assert.ThrowsAsync<PermissionCheckerNotImplementedException>(async () =>
         {
-            var result = await _commandExecutor.ExecuteAsync(new TestPermissionCheckingCommandWithResult(100));
-            result.OnFailure(f =>
-            {
-                if (f is NotAuthorisedFailure nof)
-                {
-                    Assert.Pass();
-                }
-            });
-            Assert.Fail();
-        }
-
-        [Test]
-        public async Task CommandExecutorWithPermissions_ThrowsIfPermissionCheckerDoesNotExist()
-        {
-            Assert.ThrowsAsync<PermissionCheckerNotImplementedException>(async () =>
-            {
-                await _commandExecutor.ExecuteAsync(new TestPermissionCheckingCommandWithoutPermissionChecker(1));
-            });
-        }
+            await _commandExecutor.ExecuteAsync(new TestPermissionCheckingCommandWithoutPermissionChecker(1));
+        });
     }
 }

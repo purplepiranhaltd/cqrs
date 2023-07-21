@@ -1,19 +1,18 @@
 ﻿using PurplePiranha.Cqrs.Queries;
 using PurplePiranha.FluentResults.Results;
 
-namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.ValidationThenPermissions.Query
+namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.ValidationThenPermissions.Query;
+
+public class VThenPTestQueryHandler : IQueryHandler<VThenPTestQuery, int>
 {
-    public class VThenPTestQueryHandler : IQueryHandler<VThenPTestQuery, int>
+    public Task<Result<int>> ExecuteAsync(VThenPTestQuery query)
     {
-        public Task<Result<int>> ExecuteAsync(VThenPTestQuery query)
-        {
-            // Ensure that query isn't executed before permission checking
-            Assert.That(query.SpecialNumber, Is.Not.EqualTo(100));
+        // Ensure that query isn't executed before permission checking
+        Assert.That(query.SpecialNumber, Is.Not.EqualTo(100));
 
-            // Ensure that query isn't executed before validation check
-            Assert.That(query.SpecialNumber, Is.Not.EqualTo(200));
+        // Ensure that query isn't executed before validation check
+        Assert.That(query.SpecialNumber, Is.Not.EqualTo(200));
 
-            return Task.FromResult(Result.SuccessResult(query.SpecialNumber));
-        }
+        return Task.FromResult(Result.SuccessResult(query.SpecialNumber));
     }
 }

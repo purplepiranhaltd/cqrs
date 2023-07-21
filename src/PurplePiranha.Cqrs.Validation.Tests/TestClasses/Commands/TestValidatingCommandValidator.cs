@@ -1,12 +1,11 @@
 ﻿using FluentValidation;
 
-namespace PurplePiranha.Cqrs.Validation.Tests.TestClasses.Commands
+namespace PurplePiranha.Cqrs.Validation.Tests.TestClasses.Commands;
+
+public class TestValidatingCommandValidator : AbstractValidator<TestValidatingCommand>
 {
-    public class TestValidatingCommandValidator : AbstractValidator<TestValidatingCommand>
+    public TestValidatingCommandValidator()
     {
-        public TestValidatingCommandValidator()
-        {
-            RuleFor(c => c.IMustNotBe100).NotEqual(100);
-        }
+        RuleFor(c => c.IMustNotBe100).NotEqual(100);
     }
 }

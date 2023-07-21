@@ -14,89 +14,88 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Permissions.ServiceRegistration
+namespace PurplePiranha.Cqrs.Permissions.ServiceRegistration;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    #region Extension Methods
+    public static IServiceCollection WithCqrsPermissionsModule(
+        this IServiceCollection services, CqrsPermissionsOptions? options = null
+        )
     {
-        #region Extension Methods
-        public static IServiceCollection WithCqrsPermissionsModule(
-            this IServiceCollection services, CqrsPermissionsOptions? options = null
-            )
-        {
-            if (options is null)
-                options = new CqrsPermissionsOptions();
+        if (options is null)
+            options = new CqrsPermissionsOptions();
 
-            // Get the current command and query executor types.
-            // We will need to pass these to the constructors of our new ones.
-            var helper = new ServiceRegistrationHelper(services);
-            var queryExecutorType = helper.GetCurrentImplementationType<IQueryExecutor>();
-            var commandExecutorType = helper.GetCurrentImplementationType<ICommandExecutor>();
+        // Get the current command and query executor types.
+        // We will need to pass these to the constructors of our new ones.
+        var helper = new ServiceRegistrationHelper(services);
+        var queryExecutorType = helper.GetCurrentImplementationType<IQueryExecutor>();
+        var commandExecutorType = helper.GetCurrentImplementationType<ICommandExecutor>();
 
-            // Remove the current command and query executor types registered by interface.
-            // They will still be accessible as they are also registered via their concrete type.
-            services.RemoveAll(typeof(IQueryExecutor));
-            services.RemoveAll(typeof(ICommandExecutor));
+        // Remove the current command and query executor types registered by interface.
+        // They will still be accessible as they are also registered via their concrete type.
+        services.RemoveAll(typeof(IQueryExecutor));
+        services.RemoveAll(typeof(ICommandExecutor));
 
-            // Register permission checker factory and executor
-            services
-                .AddScoped<IPermissionCheckerFactory, PermissionCheckerFactory>()
-                .AddScoped<IPermissionCheckerExecutor, PermissionCheckerExecutor>();
+        // Register permission checker factory and executor
+        services
+            .AddScoped<IPermissionCheckerFactory, PermissionCheckerFactory>()
+            .AddScoped<IPermissionCheckerExecutor, PermissionCheckerExecutor>();
 
-            // Register the permission checking command and query executors by interface.
-            // We pass the previous command and query executors to them.
-            services
-                .AddScoped<IQueryExecutor, PermissionCheckingQueryExecutor>(x =>
-                {
-                    return new PermissionCheckingQueryExecutor(
-                        (IQueryExecutor)x.GetRequiredService(queryExecutorType),
-                        x.GetRequiredService<IPermissionCheckerExecutor>(),
-                        x.GetRequiredService<NotAuthorisedFailureFactory>()
-                        );
-                })
-                .AddScoped<ICommandExecutor, PermissionCheckingCommandExecutor>(x =>
-                {
-                    return new PermissionCheckingCommandExecutor(
-                        (ICommandExecutor)x.GetRequiredService(commandExecutorType),
-                        x.GetRequiredService<IPermissionCheckerExecutor>(),
-                        x.GetRequiredService<NotAuthorisedFailureFactory>()
-                        );
-                });
-
-            // Also register the permission checking command and query executors by their concrete type.
-            // This allows them to still be accessible if we need to override them.
-            services
-                .AddScoped(x =>
-                {
-                    return new PermissionCheckingQueryExecutor(
-                        (IQueryExecutor)x.GetRequiredService(queryExecutorType),
-                        x.GetRequiredService<IPermissionCheckerExecutor>(),
-                        x.GetRequiredService<NotAuthorisedFailureFactory>()
-                        );
-                })
-                .AddScoped(x =>
-                {
-                    return new PermissionCheckingCommandExecutor(
-                        (ICommandExecutor)x.GetRequiredService(commandExecutorType),
-                        x.GetRequiredService<IPermissionCheckerExecutor>(),
-                        x.GetRequiredService<NotAuthorisedFailureFactory>()
-                        );
-                });
-
-            // Register all permission checkers
-            services
-                .AddCqrsHandlers(typeof(IPermissionChecker<>));
-
-            // Register the NotAuthorisedFailureFactory.
-            // This allows the use of a custom failure type which is useful in a system that
-            // already has a failure defined for dealing with a Not Authorised scenario.
-            services.AddScoped<NotAuthorisedFailureFactory>(x => {
-                return new NotAuthorisedFailureFactory(options.NotAuthorisedFailureType);
+        // Register the permission checking command and query executors by interface.
+        // We pass the previous command and query executors to them.
+        services
+            .AddScoped<IQueryExecutor, PermissionCheckingQueryExecutor>(x =>
+            {
+                return new PermissionCheckingQueryExecutor(
+                    (IQueryExecutor)x.GetRequiredService(queryExecutorType),
+                    x.GetRequiredService<IPermissionCheckerExecutor>(),
+                    x.GetRequiredService<NotAuthorisedFailureFactory>()
+                    );
+            })
+            .AddScoped<ICommandExecutor, PermissionCheckingCommandExecutor>(x =>
+            {
+                return new PermissionCheckingCommandExecutor(
+                    (ICommandExecutor)x.GetRequiredService(commandExecutorType),
+                    x.GetRequiredService<IPermissionCheckerExecutor>(),
+                    x.GetRequiredService<NotAuthorisedFailureFactory>()
+                    );
             });
 
+        // Also register the permission checking command and query executors by their concrete type.
+        // This allows them to still be accessible if we need to override them.
+        services
+            .AddScoped(x =>
+            {
+                return new PermissionCheckingQueryExecutor(
+                    (IQueryExecutor)x.GetRequiredService(queryExecutorType),
+                    x.GetRequiredService<IPermissionCheckerExecutor>(),
+                    x.GetRequiredService<NotAuthorisedFailureFactory>()
+                    );
+            })
+            .AddScoped(x =>
+            {
+                return new PermissionCheckingCommandExecutor(
+                    (ICommandExecutor)x.GetRequiredService(commandExecutorType),
+                    x.GetRequiredService<IPermissionCheckerExecutor>(),
+                    x.GetRequiredService<NotAuthorisedFailureFactory>()
+                    );
+            });
 
-            return services;
-        }
+        // Register all permission checkers
+        services
+            .AddCqrsHandlers(typeof(IPermissionChecker<>));
 
-        #endregion
+        // Register the NotAuthorisedFailureFactory.
+        // This allows the use of a custom failure type which is useful in a system that
+        // already has a failure defined for dealing with a Not Authorised scenario.
+        services.AddScoped<NotAuthorisedFailureFactory>(x => {
+            return new NotAuthorisedFailureFactory(options.NotAuthorisedFailureType);
+        });
+
+
+        return services;
     }
+
+    #endregion
 }

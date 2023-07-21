@@ -6,19 +6,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.PermissionsThenValidation.CommandT
+namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.PermissionsThenValidation.CommandT;
+
+public class PThenVTestCommandTHandler : ICommandHandler<PThenVTestCommandT, int>
 {
-    public class PThenVTestCommandTHandler : ICommandHandler<PThenVTestCommandT, int>
+    public Task<Result<int>> ExecuteAsync(PThenVTestCommandT command)
     {
-        public Task<Result<int>> ExecuteAsync(PThenVTestCommandT command)
-        {
-            // Ensure that query isn't executed before permission checking
-            Assert.That(command.SpecialNumber, Is.Not.EqualTo(100));
+        // Ensure that query isn't executed before permission checking
+        Assert.That(command.SpecialNumber, Is.Not.EqualTo(100));
 
-            // Ensure that query isn't executed before validation check
-            Assert.That(command.SpecialNumber, Is.Not.EqualTo(200));
+        // Ensure that query isn't executed before validation check
+        Assert.That(command.SpecialNumber, Is.Not.EqualTo(200));
 
-            return Task.FromResult(Result.SuccessResult(command.SpecialNumber));
-        }
+        return Task.FromResult(Result.SuccessResult(command.SpecialNumber));
     }
 }
