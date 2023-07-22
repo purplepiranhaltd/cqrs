@@ -12,19 +12,15 @@ namespace PurplePiranha.Cqrs.Validation.Tests;
 
 public class QueryExecutorWithValidationUnitTests
 {
-    private readonly IQueryExecutor _queryExecutor;
+    private IQueryExecutor _queryExecutor;
 
-    public QueryExecutorWithValidationUnitTests()
+    [SetUp]
+    public void Setup()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddCqrs().WithCqrsValidationModule();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _queryExecutor = serviceProvider.GetRequiredService<IQueryExecutor>();
-    }
-
-    [SetUp]
-    public void Setup()
-    {
     }
 
     [Test]

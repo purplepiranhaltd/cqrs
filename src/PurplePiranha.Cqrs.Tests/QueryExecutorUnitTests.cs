@@ -7,19 +7,15 @@ namespace PurplePiranha.Cqrs.Tests;
 
 public class QueryExecutorUnitTests
 {
-    private readonly IQueryExecutor _queryExecutor;
+    private IQueryExecutor _queryExecutor;
 
-    public QueryExecutorUnitTests()
+    [SetUp]
+    public void Setup()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddCqrs();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _queryExecutor = serviceProvider.GetRequiredService<IQueryExecutor>();
-    }
-
-    [SetUp]
-    public void Setup()
-    {
     }
 
     [Test]

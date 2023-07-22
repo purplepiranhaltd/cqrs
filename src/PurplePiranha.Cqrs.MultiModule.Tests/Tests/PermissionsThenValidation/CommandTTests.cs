@@ -12,9 +12,10 @@ namespace PurplePiranha.Cqrs.Extra.Tests.Tests.PermissionsThenValidation;
 
 public class CommandTTests
 {
-    private readonly ICommandExecutor _commandExecutor;
+    private ICommandExecutor _commandExecutor;
 
-    public CommandTTests()
+    [SetUp]
+    public void Setup()
     {
         var serviceCollection = new ServiceCollection();
 
@@ -25,11 +26,6 @@ public class CommandTTests
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _commandExecutor = serviceProvider.GetRequiredService<ICommandExecutor>();
-    }
-
-    [SetUp]
-    public void Setup()
-    {
     }
 
     [Test]

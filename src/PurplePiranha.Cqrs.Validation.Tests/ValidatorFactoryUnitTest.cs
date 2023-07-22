@@ -8,19 +8,15 @@ namespace PurplePiranha.Cqrs.Validation.Tests;
 
 public class ValidatorFactoryUnitTest
 {
-    private readonly IValidatorFactory _queryValidationHandlerFactory;
+    private IValidatorFactory _queryValidationHandlerFactory;
 
-    public ValidatorFactoryUnitTest()
+    [SetUp]
+    public void Setup()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddCqrs().WithCqrsValidationModule();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _queryValidationHandlerFactory = serviceProvider.GetRequiredService<IValidatorFactory>();
-    }
-
-    [SetUp]
-    public void Setup()
-    {
     }
 
     [Test]

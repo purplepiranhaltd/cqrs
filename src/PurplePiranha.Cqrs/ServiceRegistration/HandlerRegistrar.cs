@@ -30,7 +30,7 @@ public class HandlerRegistrar
             var serviceTypes = GetCommandHandlerInterfaceType(implementationType);
 
             foreach(var serviceType in serviceTypes)
-                services.AddScoped(serviceType, implementationType);
+                services.AddTransient(serviceType, implementationType);
         }
     }
 

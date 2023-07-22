@@ -7,19 +7,15 @@ namespace PurplePiranha.Cqrs.Tests;
 
 public class QueryHandlerFactoryUnitTests
 {
-    private readonly IQueryHandlerFactory _queryHandlerFactory;
+    private IQueryHandlerFactory _queryHandlerFactory;
 
-    public QueryHandlerFactoryUnitTests()
+    [SetUp]
+    public void Setup()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddCqrs();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _queryHandlerFactory = serviceProvider.GetRequiredService<IQueryHandlerFactory>();
-    }
-
-    [SetUp]
-    public void Setup()
-    {
     }
 
     [Test]

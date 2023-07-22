@@ -7,19 +7,15 @@ namespace PurplePiranha.Cqrs.Tests;
 
 public class CommandHandlerExecutorUnitTests
 {
-    private readonly ICommandExecutor _commandExecutor;
+    private ICommandExecutor _commandExecutor;
 
-    public CommandHandlerExecutorUnitTests()
+    [SetUp]
+    public void Setup()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddCqrs();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _commandExecutor = serviceProvider.GetRequiredService<ICommandExecutor>();
-    }
-
-    [SetUp]
-    public void Setup()
-    {
     }
 
     [Test]

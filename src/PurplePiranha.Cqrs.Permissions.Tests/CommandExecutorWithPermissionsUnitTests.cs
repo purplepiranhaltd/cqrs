@@ -11,19 +11,15 @@ namespace PurplePiranha.Cqrs.Permissions.Tests;
 
 public class CommandExecutorWithPermissionsUnitTests
 {
-    private readonly ICommandExecutor _commandExecutor;
+    private ICommandExecutor _commandExecutor;
 
-    public CommandExecutorWithPermissionsUnitTests() 
+    [SetUp]
+    public void Setup()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddCqrs().WithCqrsPermissionsModule();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _commandExecutor = serviceProvider.GetRequiredService<ICommandExecutor>();
-    }
-
-    [SetUp]
-    public void Setup()
-    {
     }
 
     [Test]

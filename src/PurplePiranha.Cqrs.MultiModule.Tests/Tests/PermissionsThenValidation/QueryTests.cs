@@ -12,9 +12,10 @@ namespace PurplePiranha.Cqrs.Extra.Tests.Tests.PermissionsThenValidation;
 
 public class QueryTests
 {
-    private readonly IQueryExecutor _queryExecutor;
+    private IQueryExecutor _queryExecutor;
 
-    public QueryTests()
+    [SetUp]
+    public void Setup()
     {
         var serviceCollection = new ServiceCollection();
 
@@ -25,11 +26,6 @@ public class QueryTests
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _queryExecutor = serviceProvider.GetRequiredService<IQueryExecutor>();
-    }
-
-    [SetUp]
-    public void Setup()
-    {
     }
 
     [Test]

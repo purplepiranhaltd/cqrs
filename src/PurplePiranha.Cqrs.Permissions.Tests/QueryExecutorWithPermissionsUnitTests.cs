@@ -11,19 +11,15 @@ namespace PurplePiranha.Cqrs.Permissions.Tests;
 
 public class QueryExecutorWithPermissionsUnitTests
 {
-    private readonly IQueryExecutor _queryExecutor;
+    private IQueryExecutor _queryExecutor;
 
-    public QueryExecutorWithPermissionsUnitTests()
+    [SetUp]
+    public void Setup()
     {
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddCqrs().WithCqrsPermissionsModule();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _queryExecutor = serviceProvider.GetRequiredService<IQueryExecutor>();
-    }
-
-    [SetUp]
-    public void Setup()
-    {
     }
 
     [Test]

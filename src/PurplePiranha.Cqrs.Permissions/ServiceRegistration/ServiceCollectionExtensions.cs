@@ -6,6 +6,7 @@ using PurplePiranha.Cqrs.Permissions.Abstractions;
 using PurplePiranha.Cqrs.Permissions.Executors;
 using PurplePiranha.Cqrs.Permissions.Factories;
 using PurplePiranha.Cqrs.Permissions.Options;
+using PurplePiranha.Cqrs.Permissions.PermissionCheckers;
 using PurplePiranha.Cqrs.Queries;
 using PurplePiranha.Cqrs.ServiceRegistration;
 using System;
