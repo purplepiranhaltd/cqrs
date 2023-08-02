@@ -11,4 +11,9 @@ public class TestPermissionCheckingQueryPermissionChecker : IPermissionChecker<T
 
         else return Task.FromResult(true);
     }
+
+    public Task InitialiseAsync()
+    {
+        return Task.CompletedTask;
+    }
 }

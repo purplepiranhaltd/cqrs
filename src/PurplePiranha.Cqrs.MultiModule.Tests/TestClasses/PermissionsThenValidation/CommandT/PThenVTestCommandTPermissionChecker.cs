@@ -16,4 +16,9 @@ public class PThenVTestCommandTPermissionChecker : IPermissionChecker<PThenVTest
 
         return Task.FromResult(true);
     }
+
+    public Task InitialiseAsync()
+    {
+        return Task.CompletedTask;
+    }
 }

@@ -16,4 +16,9 @@ public class PThenVTestQueryPermissionChecker : IPermissionChecker<PThenVTestQue
 
         return Task.FromResult(true);
     }
+
+    public Task InitialiseAsync()
+    {
+        return Task.CompletedTask;
+    }
 }

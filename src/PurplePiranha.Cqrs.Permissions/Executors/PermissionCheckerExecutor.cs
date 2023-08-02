@@ -23,6 +23,7 @@ public class PermissionCheckerExecutor : IPermissionCheckerExecutor
         try
         {
             var handler = _factory.CreatePermissionChecker<T>();
+            await handler.InitialiseAsync();
             return await handler.HasPermission(obj);
         }
         catch (PermissionCheckerNotImplementedException e)

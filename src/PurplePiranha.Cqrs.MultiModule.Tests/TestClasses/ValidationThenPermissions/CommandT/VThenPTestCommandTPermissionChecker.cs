@@ -19,4 +19,9 @@ public class VThenPTestCommandTPermissionChecker : IPermissionChecker<VThenPTest
 
         return Task.FromResult(true);
     }
+
+    public Task InitialiseAsync()
+    {
+        return Task.CompletedTask;
+    }
 }

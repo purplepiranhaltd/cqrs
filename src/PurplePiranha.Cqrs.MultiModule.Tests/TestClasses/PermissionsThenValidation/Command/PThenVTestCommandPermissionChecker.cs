@@ -16,4 +16,9 @@ public class PThenVTestCommandPermissionChecker : IPermissionChecker<PThenVTestC
 
         return Task.FromResult(true);
     }
+
+    public Task InitialiseAsync()
+    {
+        return Task.CompletedTask;
+    }
 }

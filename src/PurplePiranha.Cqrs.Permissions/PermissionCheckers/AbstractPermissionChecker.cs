@@ -34,6 +34,17 @@ public abstract class AbstractPermissionChecker<T> : IPermissionChecker<T>
 
     public abstract Task Permissions();
 
+
+    /// <summary>
+    /// Override the InitialiseAsync method provide any custom initialisation
+    /// that can't be done via the constructor due to the requirement of async calls.
+    /// </summary>
+    /// <returns></returns>
+    public virtual Task InitialiseAsync()
+    {
+        return Task.CompletedTask;
+    }
+
     public IPermissionBuilderInitial Permission()
     {
         var builder = new PermissionBuilder();
