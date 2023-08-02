@@ -30,6 +30,8 @@ jobs:
         git branch --remote --contains | grep origin/main
     - name: Set VERSION variable from tag
       run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+    - name: Check version
+      run: echo ${VERSION}
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
