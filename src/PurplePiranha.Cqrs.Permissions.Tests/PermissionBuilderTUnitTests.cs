@@ -1,15 +1,6 @@
-using Microsoft.Extensions.DependencyInjection;
-using PurplePiranha.Cqrs.Extensions;
 using PurplePiranha.Cqrs.Permissions.Abstractions;
 using PurplePiranha.Cqrs.Permissions.Builders;
-using PurplePiranha.Cqrs.Permissions.Exceptions;
-using PurplePiranha.Cqrs.Permissions.Extensions;
-using PurplePiranha.Cqrs.Permissions.Failures;
-using PurplePiranha.Cqrs.Permissions.ServiceRegistration;
 using PurplePiranha.Cqrs.Permissions.Tests.TestClasses;
-using PurplePiranha.Cqrs.Permissions.Tests.TestClasses.Queries;
-using PurplePiranha.Cqrs.Queries;
-using PurplePiranha.FluentResults.Results;
 using System.Linq.Expressions;
 
 namespace PurplePiranha.Cqrs.Permissions.Tests;
@@ -34,9 +25,9 @@ public class PermissionBuilderTUnitTests
         {
             if (expression is null)
                 throw new ArgumentNullException(nameof(expression));
-            
-            var member = expression.GetMember();
-            var value = _obj.GetType().GetProperty(member.Name).GetValue(_obj, null);
+
+            var func = expression.Compile();
+            var value = func(_obj);
 
             var builder = new PermissionBuilder<PermissionBuilderTestClass, TProperty>((TProperty)value);
             return (IPermissionBuilderWithPropertyInitial<T, TProperty>)builder;

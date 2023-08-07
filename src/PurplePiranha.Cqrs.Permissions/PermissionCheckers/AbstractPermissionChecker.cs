@@ -1,18 +1,12 @@
 ﻿using PurplePiranha.Cqrs.Permissions.Abstractions;
 using PurplePiranha.Cqrs.Permissions.Builders;
-using PurplePiranha.Cqrs.Permissions.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PurplePiranha.Cqrs.Permissions.PermissionCheckers;
 public abstract class AbstractPermissionChecker<T> : IPermissionChecker<T>
 {
     List<PermissionBuilder> _builders;
-    T _obj;
+    protected T Object { get; private set; }
 
     public AbstractPermissionChecker()
     {
@@ -24,8 +18,8 @@ public abstract class AbstractPermissionChecker<T> : IPermissionChecker<T>
         if (expression is null)
             throw new ArgumentNullException(nameof(expression));
 
-        var member = expression.GetMember();
-        var value = _obj.GetType().GetProperty(member.Name).GetValue(_obj, null);
+        var func = expression.Compile();
+        var value = func(Object);
 
         var builder = new PermissionBuilder<T, TProperty>((TProperty)value);
         _builders.Add(builder);
@@ -54,7 +48,7 @@ public abstract class AbstractPermissionChecker<T> : IPermissionChecker<T>
 
     public async Task<bool> HasPermission(T obj)
     {
-        _obj = obj;
+        Object = obj;
         await Permissions();
 
         foreach (var builder in _builders)
