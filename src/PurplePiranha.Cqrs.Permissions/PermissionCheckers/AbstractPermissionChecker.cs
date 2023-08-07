@@ -5,12 +5,12 @@ using System.Linq.Expressions;
 namespace PurplePiranha.Cqrs.Permissions.PermissionCheckers;
 public abstract class AbstractPermissionChecker<T> : IPermissionChecker<T>
 {
-    List<PermissionBuilder> _builders;
+    protected List<PermissionBuilder> Builders { get; private set; }
     protected T Object { get; private set; }
 
     public AbstractPermissionChecker()
     {
-        _builders = new List<PermissionBuilder>();
+        Builders = new List<PermissionBuilder>();
     }
 
     public IPermissionBuilderWithPropertyInitial<T, TProperty> PermissionFor<TProperty>(Expression<Func<T, TProperty>> expression)
@@ -22,7 +22,7 @@ public abstract class AbstractPermissionChecker<T> : IPermissionChecker<T>
         var value = func(Object);
 
         var builder = new PermissionBuilder<T, TProperty>((TProperty)value);
-        _builders.Add(builder);
+        Builders.Add(builder);
         return builder;
     }
 
@@ -42,7 +42,7 @@ public abstract class AbstractPermissionChecker<T> : IPermissionChecker<T>
     public IPermissionBuilderInitial Permission()
     {
         var builder = new PermissionBuilder();
-        _builders.Add(builder);
+        Builders.Add(builder);
         return builder;
     }
 
@@ -51,7 +51,7 @@ public abstract class AbstractPermissionChecker<T> : IPermissionChecker<T>
         Object = obj;
         await Permissions();
 
-        foreach (var builder in _builders)
+        foreach (var builder in Builders)
         {
             await builder.Build();
 
