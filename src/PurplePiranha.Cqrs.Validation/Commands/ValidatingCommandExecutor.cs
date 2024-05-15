@@ -1,4 +1,5 @@
 ﻿using FluentValidation.Results;
+using Microsoft.Extensions.Logging;
 using PurplePiranha.Cqrs.Commands;
 using PurplePiranha.Cqrs.Validation.Failures;
 using PurplePiranha.Cqrs.Validation.Validators;
@@ -13,6 +14,7 @@ public class ValidatingCommandExecutor : ICommandExecutor
 {
     private readonly ICommandExecutor _commandExecutor;
     private readonly IValidatorExecutor _validatorExecutor;
+    private readonly ILogger<ValidatingCommandExecutor> _logger;
 
 #nullable disable
     private static readonly MethodInfo PerformExecutionTAsyncMethod =
@@ -32,20 +34,24 @@ public class ValidatingCommandExecutor : ICommandExecutor
 
     public ValidatingCommandExecutor(
         ICommandExecutor commandExecutor,
-        IValidatorExecutor validatorExecutor
+        IValidatorExecutor validatorExecutor,
+        ILogger<ValidatingCommandExecutor> logger
         )
     {
         _commandExecutor = commandExecutor;
         _validatorExecutor = validatorExecutor;
+        _logger = logger;
     }
 
     public async Task<Result> ExecuteAsync<TCommand>(TCommand command) where TCommand : ICommand
     {
+        _logger.LogInformation($"Executing command (with validation): {command.GetType().Name}");
         return await PerformExecutionAsync<TCommand>(command);
     }
 
     public async Task<Result<TResult>> ExecuteAsync<TResult>(ICommand<TResult> command)
     {
+        _logger.LogInformation($"Executing command (with validation): {command.GetType().Name}");
         return await CallPerformExecuteTAsync<TResult>(command);
     }
 

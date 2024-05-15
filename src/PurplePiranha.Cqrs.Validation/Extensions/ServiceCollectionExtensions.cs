@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using PurplePiranha.Cqrs.Commands;
 using PurplePiranha.Cqrs.Extensions;
 using PurplePiranha.Cqrs.Queries;
@@ -44,7 +45,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<ICommandExecutor, ValidatingCommandExecutor>(x => {
                 return new ValidatingCommandExecutor(
                     (ICommandExecutor)x.GetRequiredService(commandExecutorType),
-                    x.GetRequiredService<IValidatorExecutor>()
+                    x.GetRequiredService<IValidatorExecutor>(),
+                    x.GetRequiredService<ILogger<ValidatingCommandExecutor>>()
                     );
             });
 
@@ -60,7 +62,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<ValidatingCommandExecutor>(x => {
                 return new ValidatingCommandExecutor(
                     (ICommandExecutor)x.GetRequiredService(commandExecutorType),
-                    x.GetRequiredService<IValidatorExecutor>()
+                    x.GetRequiredService<IValidatorExecutor>(),
+                    x.GetRequiredService<ILogger<ValidatingCommandExecutor>>()
                     );
             });
 
