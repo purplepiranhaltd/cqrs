@@ -13,7 +13,7 @@ public class QueryHandlerFactoryUnitTests
     public void Setup()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddCqrs();
+        serviceCollection.AddCqrs().AddLogging();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _queryHandlerFactory = serviceProvider.GetRequiredService<IQueryHandlerFactory>();
     }

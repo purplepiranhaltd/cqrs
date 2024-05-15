@@ -22,7 +22,8 @@ public class QueryValidationAndPermissionsTests
         serviceCollection
             .AddCqrs()
             .WithCqrsPermissionsModule()
-            .WithCqrsValidationModule();
+            .WithCqrsValidationModule()
+            .AddLogging();
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _queryExecutor = serviceProvider.GetRequiredService<IQueryExecutor>();

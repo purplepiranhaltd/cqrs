@@ -24,7 +24,7 @@ public class NotAuthorisedFailureFactoryTests
     public void FailureFactory_ReturnsDefaultNotAuthorisedFailure()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddCqrs().WithCqrsPermissionsModule();
+        serviceCollection.AddCqrs().WithCqrsPermissionsModule().AddLogging();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         var failureFactory = serviceProvider.GetRequiredService<NotAuthorisedFailureFactory>();
         var failure = failureFactory.GetNotAuthorisedFailure();

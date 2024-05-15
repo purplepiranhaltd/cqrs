@@ -13,7 +13,7 @@ public class CommandHandlerFactoryUnitTests
     public void Setup()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddCqrs();
+        serviceCollection.AddCqrs().AddLogging();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _commandHandlerFactory = serviceProvider.GetRequiredService<ICommandHandlerFactory>();
     }

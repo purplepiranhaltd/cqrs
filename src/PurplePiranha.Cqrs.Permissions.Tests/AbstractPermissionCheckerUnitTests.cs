@@ -19,7 +19,7 @@ public class AbstractPermissionCheckerUnitTests
     public void Setup()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddCqrs().WithCqrsPermissionsModule();
+        serviceCollection.AddCqrs().WithCqrsPermissionsModule().AddLogging();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _queryExecutor = serviceProvider.GetRequiredService<IQueryExecutor>();
     }

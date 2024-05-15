@@ -1,4 +1,5 @@
-﻿using PurplePiranha.Cqrs.Failures;
+﻿using Microsoft.Extensions.Logging;
+using PurplePiranha.Cqrs.Failures;
 using PurplePiranha.FluentResults.Results;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
@@ -13,6 +14,7 @@ namespace PurplePiranha.Cqrs.Commands;
 public class CommandExecutor : ICommandExecutor
 {
     private readonly ICommandHandlerFactory _commandHandlerFactory;
+    private readonly ILogger<CommandExecutor> _logger;
 
 #nullable disable
     private static MethodInfo ExecuteCommandAsyncMethod =>
@@ -23,9 +25,10 @@ public class CommandExecutor : ICommandExecutor
             );
 #nullable enable
 
-    public CommandExecutor(ICommandHandlerFactory commandHandlerFactory)
+    public CommandExecutor(ICommandHandlerFactory commandHandlerFactory, ILogger<CommandExecutor> logger)
     {
         _commandHandlerFactory = commandHandlerFactory;
+        _logger = logger;
     }
 
     /// <summary>
@@ -36,6 +39,8 @@ public class CommandExecutor : ICommandExecutor
     /// <returns></returns>
     public virtual async Task<Result> ExecuteAsync<TCommand>(TCommand command) where TCommand : ICommand
     {
+        _logger.LogInformation($"Executing command: {command.GetType().Name}");
+
         try
         {
             var handler = _commandHandlerFactory.CreateHandler<TCommand>();
@@ -55,6 +60,8 @@ public class CommandExecutor : ICommandExecutor
     /// <returns></returns>
     public async Task<Result<TResult>> ExecuteAsync<TResult>(ICommand<TResult> command)
     {
+        _logger.LogInformation($"Executing command: {command.GetType().Name}");
+
         // We make a dynamic call to the generic method via reflection,
         // otherwise the return type would have to be specified on every call
 

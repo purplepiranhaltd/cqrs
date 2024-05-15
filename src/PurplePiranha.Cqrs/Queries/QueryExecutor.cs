@@ -1,4 +1,5 @@
-﻿using PurplePiranha.Cqrs.Commands;
+﻿using Microsoft.Extensions.Logging;
+using PurplePiranha.Cqrs.Commands;
 using PurplePiranha.Cqrs.Failures;
 using PurplePiranha.FluentResults.Results;
 using System.Reflection;
@@ -14,6 +15,7 @@ namespace PurplePiranha.Cqrs.Queries;
 public class QueryExecutor : IQueryExecutor
 {
     private readonly IQueryHandlerFactory _queryHandlerFactory;
+    private readonly ILogger<QueryExecutor> _logger;
 
 #nullable disable
     private static MethodInfo ExecuteQueryAsyncMethod => 
@@ -24,13 +26,16 @@ public class QueryExecutor : IQueryExecutor
             );
 #nullable enable
 
-    public QueryExecutor(IQueryHandlerFactory queryHandlerFactory)
+    public QueryExecutor(IQueryHandlerFactory queryHandlerFactory, ILogger<QueryExecutor> logger)
     {
         _queryHandlerFactory = queryHandlerFactory;
+        _logger = logger;
     }
 
     public async Task<Result<TResult>> ExecuteAsync<TResult>(IQuery<TResult> query)
     {
+        _logger.LogInformation($"Executing query: {query.GetType().Name}");
+
         var queryType = query.GetType();
         var resultType = typeof(TResult);
 

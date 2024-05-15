@@ -22,7 +22,8 @@ public class CommandValidationAndPermissionsTests
         serviceCollection
             .AddCqrs()
             .WithCqrsPermissionsModule()
-            .WithCqrsValidationModule();
+            .WithCqrsValidationModule()
+            .AddLogging();
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _commandExecutor = serviceProvider.GetRequiredService<ICommandExecutor>();

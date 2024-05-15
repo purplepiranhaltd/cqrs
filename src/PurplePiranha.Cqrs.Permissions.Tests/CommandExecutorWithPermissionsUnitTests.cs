@@ -17,7 +17,7 @@ public class CommandExecutorWithPermissionsUnitTests
     public void Setup()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddCqrs().WithCqrsPermissionsModule();
+        serviceCollection.AddCqrs().WithCqrsPermissionsModule().AddLogging();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         _commandExecutor = serviceProvider.GetRequiredService<ICommandExecutor>();
     }
