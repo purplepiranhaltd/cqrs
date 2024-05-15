@@ -1,4 +1,5 @@
 ﻿using FluentValidation.Results;
+using Microsoft.Extensions.Logging;
 using PurplePiranha.Cqrs.Queries;
 using PurplePiranha.Cqrs.Validation.Failures;
 using PurplePiranha.Cqrs.Validation.Validators;
@@ -14,6 +15,7 @@ public class ValidatingQueryExecutor : IQueryExecutor
 
     private readonly IQueryExecutor _queryExecutor;
     private readonly IValidatorExecutor _validatorExecutor;
+    private readonly ILogger<ValidatingQueryExecutor> _logger;
 
 #nullable disable
     private static readonly MethodInfo PerformExecutionAsyncMethod =
@@ -33,14 +35,17 @@ public class ValidatingQueryExecutor : IQueryExecutor
 
     public ValidatingQueryExecutor(
         IQueryExecutor queryExecutor,
-        IValidatorExecutor validatorExecutor)
+        IValidatorExecutor validatorExecutor,
+        ILogger<ValidatingQueryExecutor> logger)
     {
         _queryExecutor = queryExecutor;
         _validatorExecutor = validatorExecutor;
+        _logger = logger;
     }
 
     public async Task<Result<TResult>> ExecuteAsync<TResult>(IQuery<TResult> query)
     {
+        _logger.LogInformation($"Executing query (with validation): {query.GetType().Name}");
         return await CallPerformExecuteAsync<TResult>(query);
     }
 

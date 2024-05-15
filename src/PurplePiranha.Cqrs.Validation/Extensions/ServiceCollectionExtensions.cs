@@ -39,7 +39,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<IQueryExecutor, ValidatingQueryExecutor>(x => {
                 return new ValidatingQueryExecutor(
                     (IQueryExecutor)x.GetRequiredService(queryExecutorType),
-                    x.GetRequiredService<IValidatorExecutor>()
+                    x.GetRequiredService<IValidatorExecutor>(),
+                    x.GetRequiredService<ILogger<ValidatingQueryExecutor>>()
                     );
             })
             .AddScoped<ICommandExecutor, ValidatingCommandExecutor>(x => {
@@ -56,7 +57,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<ValidatingQueryExecutor>(x => {
                 return new ValidatingQueryExecutor(
                     (IQueryExecutor)x.GetRequiredService(queryExecutorType),
-                    x.GetRequiredService<IValidatorExecutor>()
+                    x.GetRequiredService<IValidatorExecutor>(),
+                    x.GetRequiredService<ILogger<ValidatingQueryExecutor>>()
                     );
             })
             .AddScoped<ValidatingCommandExecutor>(x => {
