@@ -20,5 +20,5 @@ public interface IPermissionCheckerExecutor
     /// <typeparam name="T">The type of the query.</typeparam>
     /// <param name="query">The query.</param>
     /// <returns></returns>
-    Task<bool> ExecuteAsync<T>(T query) where T : IPermissionRequired;
+    Task<bool> ExecuteAsync<T>(T query, CancellationToken cancellationToken = default) where T : IPermissionRequired;
 }

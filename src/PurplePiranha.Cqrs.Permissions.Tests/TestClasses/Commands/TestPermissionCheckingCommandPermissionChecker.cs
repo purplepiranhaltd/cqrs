@@ -6,12 +6,12 @@ public class TestPermissionCheckingCommandPermissionChecker :
     IPermissionChecker<TestPermissionCheckingCommandWithResult>,
     IPermissionChecker<TestPermissionCheckingCommand>
 {
-    public Task<bool> HasPermission(TestPermissionCheckingCommandWithResult obj)
+    public Task<bool> HasPermissionAsync(TestPermissionCheckingCommandWithResult obj)
     {
         return HasPermission(obj.IMustNotBe100);
     }
 
-    public Task<bool> HasPermission(TestPermissionCheckingCommand obj)
+    public Task<bool> HasPermissionAsync(TestPermissionCheckingCommand obj)
     {
         return HasPermission(obj.IMustNotBe100);
     }

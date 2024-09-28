@@ -9,7 +9,7 @@ namespace PurplePiranha.Cqrs.Permissions.Abstractions;
 
 public interface IPermissionChecker<T>
 {
-    Task<bool> HasPermission(T obj);
+    Task<bool> HasPermissionAsync(T obj);
 
     /// <summary>
     /// Initialises the permission checker.

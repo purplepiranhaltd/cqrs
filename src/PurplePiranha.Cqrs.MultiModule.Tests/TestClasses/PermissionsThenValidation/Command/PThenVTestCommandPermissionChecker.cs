@@ -9,7 +9,7 @@ namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.PermissionsThenValidation.C
 
 public class PThenVTestCommandPermissionChecker : IPermissionChecker<PThenVTestCommand>
 {
-    public Task<bool> HasPermission(PThenVTestCommand obj)
+    public Task<bool> HasPermissionAsync(PThenVTestCommand obj)
     {
         if (obj.SpecialNumber == 100)
             return Task.FromResult(false);

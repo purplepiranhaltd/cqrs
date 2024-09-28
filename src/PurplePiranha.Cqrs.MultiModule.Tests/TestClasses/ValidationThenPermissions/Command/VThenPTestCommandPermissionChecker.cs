@@ -9,7 +9,7 @@ namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.ValidationThenPermissions.C
 
 public class VThenPTestCommandPermissionChecker : IPermissionChecker<VThenPTestCommand>
 {
-    public Task<bool> HasPermission(VThenPTestCommand obj)
+    public Task<bool> HasPermissionAsync(VThenPTestCommand obj)
     {
         // Ensure that permission checker is not called before validator
         Assert.That(obj.SpecialNumber, Is.Not.EqualTo(200));

@@ -12,12 +12,12 @@ public class ValidatorExecutor : IValidatorExecutor
         _factory = factory;
     }
 
-    public async Task<ValidationResult> ExecuteAsync<TQuery>(TQuery query) where TQuery : IValidationRequired
+    public async Task<ValidationResult> ExecuteAsync<TQuery>(TQuery query, CancellationToken cancellationToken = default) where TQuery : IValidationRequired
     {
         try
         {
             var handler = _factory.CreateValidator<TQuery>();
-            return await handler.ValidateAsync(query);
+            return await handler.ValidateAsync(query, cancellationToken);
         }
         catch (ValidatorNotImplementedException e)
         {

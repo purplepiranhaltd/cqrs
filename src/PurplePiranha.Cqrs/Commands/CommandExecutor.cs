@@ -3,6 +3,7 @@ using PurplePiranha.Cqrs.Failures;
 using PurplePiranha.FluentResults.Results;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PurplePiranha.Cqrs.Commands;
@@ -37,14 +38,14 @@ public class CommandExecutor : ICommandExecutor
     /// <typeparam name="TCommand">The type of the command.</typeparam>
     /// <param name="command">The command.</param>
     /// <returns></returns>
-    public virtual async Task<Result> ExecuteAsync<TCommand>(TCommand command) where TCommand : ICommand
+    public virtual async Task<Result> ExecuteAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default) where TCommand : ICommand
     {
         _logger.LogInformation($"Executing command: {command.GetType().Name}");
 
         try
         {
             var handler = _commandHandlerFactory.CreateHandler<TCommand>();
-            return await handler.ExecuteAsync(command);
+            return await handler.ExecuteAsync(command, cancellationToken);
         }
         catch (CommandHandlerNotImplementedException e)
         {
@@ -58,7 +59,7 @@ public class CommandExecutor : ICommandExecutor
     /// <typeparam name="TResult">The type of the result.</typeparam>
     /// <param name="command">The command.</param>
     /// <returns></returns>
-    public async Task<Result<TResult>> ExecuteAsync<TResult>(ICommand<TResult> command)
+    public async Task<Result<TResult>> ExecuteAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation($"Executing command: {command.GetType().Name}");
 
@@ -73,7 +74,7 @@ public class CommandExecutor : ICommandExecutor
             var method = ExecuteCommandAsyncMethod.MakeGenericMethod(commandType, resultType);
 
 #nullable disable
-            return await (Task<Result<TResult>>)method.Invoke(this, new object[] { command });
+            return await (Task<Result<TResult>>)method.Invoke(this, new object[] { command, cancellationToken });
 #nullable enable
 
         }
@@ -97,12 +98,12 @@ public class CommandExecutor : ICommandExecutor
     /// <typeparam name="TResult">The type of the result.</typeparam>
     /// <param name="command">The command.</param>
     /// <returns></returns>
-    protected virtual async Task<Result<TResult>> ExecuteCommandAsync<TCommand, TResult>(TCommand command) where TCommand : ICommand<TResult>
+    protected virtual async Task<Result<TResult>> ExecuteCommandAsync<TCommand, TResult>(TCommand command, CancellationToken cancellationToken = default) where TCommand : ICommand<TResult>
     {
         try
         {
             var handler = _commandHandlerFactory.CreateHandler<TCommand, TResult>();
-            return await handler.ExecuteAsync(command);
+            return await handler.ExecuteAsync(command, cancellationToken);
         }
         catch (CommandHandlerNotImplementedException e)
         {

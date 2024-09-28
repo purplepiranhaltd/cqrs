@@ -18,17 +18,18 @@ public class PermissionCheckerExecutor : IPermissionCheckerExecutor
     {
         _factory = factory;
     }
-    public async Task<bool> ExecuteAsync<T>(T obj) where T : IPermissionRequired
+    public async Task<bool> ExecuteAsync<T>(T obj, CancellationToken cancellationToken = default) where T : IPermissionRequired
     {
+        //TODO: Should be be using the CancellationToken throughout the permission checking process?
         try
         {
             var handler = _factory.CreatePermissionChecker<T>();
             await handler.InitialiseAsync();
-            return await handler.HasPermission(obj);
+            return await handler.HasPermissionAsync(obj);
         }
         catch (PermissionCheckerNotImplementedException e)
         {
-            //TODO: Logging
+            //TODO: Do we want to iomplement some kind of logging for this or should the implementing application be dealing with it?
             throw;
         }
     }

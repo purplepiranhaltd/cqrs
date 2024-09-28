@@ -46,7 +46,7 @@ public abstract class AbstractPermissionChecker<T> : IPermissionChecker<T>
         return builder;
     }
 
-    public async Task<bool> HasPermission(T obj)
+    public async Task<bool> HasPermissionAsync(T obj)
     {
         Object = obj;
         await Permissions();

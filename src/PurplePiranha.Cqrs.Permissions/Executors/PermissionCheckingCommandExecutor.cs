@@ -30,17 +30,17 @@ public class PermissionCheckingCommandExecutor : ICommandExecutor
         _permissionCheckerExecutor = permissionCheckerExecutor;
         _notAuthorisedFailureFactory = notAuthorisedFailureFactory;
     }
-    public async Task<Result> ExecuteAsync<TCommand>(TCommand command) where TCommand : ICommand
+    public async Task<Result> ExecuteAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default) where TCommand : ICommand
     {
-        return await PerformExecutionAsync<TCommand>(command);
+        return await PerformExecutionAsync<TCommand>(command, cancellationToken);
     }
 
-    public async Task<Result<TResult>> ExecuteAsync<TResult>(ICommand<TResult> command)
+    public async Task<Result<TResult>> ExecuteAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default)
     {
-        return await CallPerformExecuteTAsync<TResult>(command);
+        return await CallPerformExecuteTAsync<TResult>(command, cancellationToken);
     }
 
-    private async Task<Result<TResult>> CallPerformExecuteTAsync<TResult>(ICommand<TResult> command)
+    private async Task<Result<TResult>> CallPerformExecuteTAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default)
     {
         var commandType = command.GetType();
         var resultType = typeof(TResult);
@@ -50,7 +50,7 @@ public class PermissionCheckingCommandExecutor : ICommandExecutor
             var method = PerformExecutionTAsyncMethod.MakeGenericMethod(commandType, resultType);
 
 #nullable disable
-            return await (Task<Result<TResult>>)method.Invoke(this, new object[] { command });
+            return await (Task<Result<TResult>>)method.Invoke(this, new object[] { command, cancellationToken });
 #nullable enable
         }
         catch (TargetInvocationException ex)
@@ -66,7 +66,7 @@ public class PermissionCheckingCommandExecutor : ICommandExecutor
         }
     }
 
-    private async Task<bool> CallPerformPermissionCheckingAsync<TCommand>(TCommand command)
+    private async Task<bool> CallPerformPermissionCheckingAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
     {
         var commandType = command.GetType();
 
@@ -75,7 +75,7 @@ public class PermissionCheckingCommandExecutor : ICommandExecutor
             var method = PerformPermissionCheckingAsyncMethod.MakeGenericMethod(commandType);
 
 #nullable disable
-            return await (Task<bool>)method.Invoke(this, new object[] { command });
+            return await (Task<bool>)method.Invoke(this, new object[] { command, cancellationToken });
 #nullable disable
         }
         catch (TargetInvocationException ex)
@@ -91,35 +91,35 @@ public class PermissionCheckingCommandExecutor : ICommandExecutor
         }
     }
 
-    private async Task<Result<TResult>> PerformExecutionTAsync<TCommand, TResult>(TCommand command) where TCommand : ICommand<TResult>
+    private async Task<Result<TResult>> PerformExecutionTAsync<TCommand, TResult>(TCommand command, CancellationToken cancellationToken = default) where TCommand : ICommand<TResult>
     {
         if (command is IPermissionRequired)
         {
-            var hasPermission = await CallPerformPermissionCheckingAsync(command);
+            var hasPermission = await CallPerformPermissionCheckingAsync(command, cancellationToken);
 
             if (!hasPermission)
                 return Result.FailureResult<TResult>(_notAuthorisedFailureFactory.GetNotAuthorisedFailure());
         }
 
-        return await _commandExecutor.ExecuteAsync(command);
+        return await _commandExecutor.ExecuteAsync(command, cancellationToken);
     }
 
-    private async Task<Result> PerformExecutionAsync<TCommand>(TCommand command) where TCommand: ICommand
+    private async Task<Result> PerformExecutionAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default) where TCommand: ICommand
     {
         if (command is IPermissionRequired)
         {
-            var hasPermission = await CallPerformPermissionCheckingAsync(command);
+            var hasPermission = await CallPerformPermissionCheckingAsync(command, cancellationToken);
 
             if (!hasPermission)
                 return Result.FailureResult(_notAuthorisedFailureFactory.GetNotAuthorisedFailure());
         }
 
-        return await _commandExecutor.ExecuteAsync(command);
+        return await _commandExecutor.ExecuteAsync(command, cancellationToken);
     }
 
-    private async Task<bool> PerformPermissionCheckingAsync<TCommand>(TCommand command) where TCommand : IPermissionRequired
+    private async Task<bool> PerformPermissionCheckingAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default) where TCommand : IPermissionRequired
     {
-        return await _permissionCheckerExecutor.ExecuteAsync(command);
+        return await _permissionCheckerExecutor.ExecuteAsync(command, cancellationToken);
     }
 
 #nullable disable

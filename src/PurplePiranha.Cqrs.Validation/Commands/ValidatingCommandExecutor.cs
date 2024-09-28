@@ -43,19 +43,19 @@ public class ValidatingCommandExecutor : ICommandExecutor
         _logger = logger;
     }
 
-    public async Task<Result> ExecuteAsync<TCommand>(TCommand command) where TCommand : ICommand
+    public async Task<Result> ExecuteAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default) where TCommand : ICommand
     {
         _logger.LogInformation($"Executing command (with validation): {command.GetType().Name}");
-        return await PerformExecutionAsync<TCommand>(command);
+        return await PerformExecutionAsync<TCommand>(command, cancellationToken);
     }
 
-    public async Task<Result<TResult>> ExecuteAsync<TResult>(ICommand<TResult> command)
+    public async Task<Result<TResult>> ExecuteAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation($"Executing command (with validation): {command.GetType().Name}");
-        return await CallPerformExecuteTAsync<TResult>(command);
+        return await CallPerformExecuteTAsync<TResult>(command, cancellationToken);
     }
 
-    private async Task<Result<TResult>> CallPerformExecuteTAsync<TResult>(ICommand<TResult> command)
+    private async Task<Result<TResult>> CallPerformExecuteTAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken = default)
     {
         var commandType = command.GetType();
         var resultType = typeof(TResult);
@@ -65,7 +65,7 @@ public class ValidatingCommandExecutor : ICommandExecutor
             var method = PerformExecutionTAsyncMethod.MakeGenericMethod(commandType, resultType);
 
 #nullable disable
-            return await (Task<Result<TResult>>)method.Invoke(this, new object[] { command });
+            return await (Task<Result<TResult>>)method.Invoke(this, new object[] { command, cancellationToken });
 #nullable enable
 
         }
@@ -82,7 +82,7 @@ public class ValidatingCommandExecutor : ICommandExecutor
         }
     }
 
-    private async Task<ValidationResult> CallPerformValidatationAsync<TCommand>(TCommand command)
+    private async Task<ValidationResult> CallPerformValidatationAsync<TCommand>(TCommand command, CancellationToken cancellationToken = default)
     {
         var queryType = command.GetType();
 
@@ -91,7 +91,7 @@ public class ValidatingCommandExecutor : ICommandExecutor
             var method = PerformValidatationAsyncMethod.MakeGenericMethod(queryType);
 
 #nullable disable
-            return await (Task<ValidationResult>)method.Invoke(this, new object[] { command });
+            return await (Task<ValidationResult>)method.Invoke(this, new object[] { command, cancellationToken });
 #nullable enable
 
         }
@@ -108,30 +108,30 @@ public class ValidatingCommandExecutor : ICommandExecutor
         }
     }
 
-    private async Task<Result<TResult>> PerformExecutionTAsync<TCommand, TResult>(TCommand query) where TCommand : ICommand<TResult>
+    private async Task<Result<TResult>> PerformExecutionTAsync<TCommand, TResult>(TCommand query, CancellationToken cancellationToken = default) where TCommand : ICommand<TResult>
     {
         if (query is IValidationRequired)
         {
-            var validationResult = await CallPerformValidatationAsync(query);
+            var validationResult = await CallPerformValidatationAsync(query, cancellationToken);
 
             if (!validationResult.IsValid)
                 return Result.FailureResult(ValidationFailure.CreateForCommand<TCommand, TResult>(validationResult));
         }
 
-        return await _commandExecutor.ExecuteAsync(query);
+        return await _commandExecutor.ExecuteAsync(query, cancellationToken);
     }
 
-    private async Task<Result> PerformExecutionAsync<TCommand>(TCommand query) where TCommand : ICommand
+    private async Task<Result> PerformExecutionAsync<TCommand>(TCommand query, CancellationToken cancellationToken = default) where TCommand : ICommand
     {
         if (query is IValidationRequired)
         {
-            var validationResult = await CallPerformValidatationAsync(query);
+            var validationResult = await CallPerformValidatationAsync(query, cancellationToken);
 
             if (!validationResult.IsValid)
                 return Result.FailureResult(ValidationFailure.CreateForCommand<TCommand>(validationResult));
         }            
 
-        return await _commandExecutor.ExecuteAsync(query);
+        return await _commandExecutor.ExecuteAsync(query, cancellationToken);
     }
 
     /// <summary>
@@ -140,8 +140,8 @@ public class ValidatingCommandExecutor : ICommandExecutor
     /// <typeparam name="TCommand">The type of the query.</typeparam>
     /// <param name="query">The query.</param>
     /// <returns></returns>
-    private async Task<ValidationResult> PerformValidatationAsync<TCommand>(TCommand query) where TCommand : IValidationRequired
+    private async Task<ValidationResult> PerformValidatationAsync<TCommand>(TCommand query, CancellationToken cancellationToken = default) where TCommand : IValidationRequired
     {
-        return await _validatorExecutor.ExecuteAsync(query);
+        return await _validatorExecutor.ExecuteAsync(query, cancellationToken);
     }
 }

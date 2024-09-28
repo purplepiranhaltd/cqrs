@@ -13,7 +13,7 @@ public interface IValidatorExecutor
     /// <typeparam name="TQuery">The type of the query.</typeparam>
     /// <param name="query">The query.</param>
     /// <returns></returns>
-    Task<ValidationResult> ExecuteAsync<TQuery>(TQuery query) where TQuery : IValidationRequired;
+    Task<ValidationResult> ExecuteAsync<TQuery>(TQuery query, CancellationToken cancellationToken = default) where TQuery : IValidationRequired;
 
     ///// <summary>
     ///// Executes the validation.
