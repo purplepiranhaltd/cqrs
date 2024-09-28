@@ -5,7 +5,7 @@ namespace PurplePiranha.Cqrs.Permissions.Tests.TestClasses.Queries;
 
 public class TestAbstractMPermissionCheckingQueryHandler : IQueryHandler<TestAbstractMPermissionCheckingQuery, int>
 {
-    public Task<Result<int>> ExecuteAsync(TestAbstractMPermissionCheckingQuery query)
+    public Task<Result<int>> ExecuteAsync(TestAbstractMPermissionCheckingQuery query, CancellationToken cancellationToken = default)
     {
         return Task.FromResult(Result.SuccessResult(100));
     }

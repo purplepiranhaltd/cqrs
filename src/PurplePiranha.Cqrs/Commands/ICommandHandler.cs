@@ -1,4 +1,5 @@
 ﻿using PurplePiranha.FluentResults.Results;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PurplePiranha.Cqrs.Commands;
@@ -9,7 +10,7 @@ namespace PurplePiranha.Cqrs.Commands;
 /// <typeparam name="TCommand">The type of the command.</typeparam>
 public interface ICommandHandler<TCommand> where TCommand : ICommand
 {
-    Task<Result> ExecuteAsync(TCommand command);
+    Task<Result> ExecuteAsync(TCommand command, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -18,5 +19,5 @@ public interface ICommandHandler<TCommand> where TCommand : ICommand
 /// <typeparam name="TCommand">The type of the command.</typeparam>
 public interface ICommandHandler<TCommand, TResult> where TCommand : ICommand<TResult>
 {
-    Task<Result<TResult>> ExecuteAsync(TCommand command);
+    Task<Result<TResult>> ExecuteAsync(TCommand command, CancellationToken cancellationToken = default);
 }

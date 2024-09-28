@@ -10,7 +10,7 @@ namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.PermissionsThenValidation.C
 
 public class PThenVTestCommandHandler : ICommandHandler<PThenVTestCommand>
 {
-    public Task<Result> ExecuteAsync(PThenVTestCommand command)
+    public Task<Result> ExecuteAsync(PThenVTestCommand command, CancellationToken cancellationToken = default)
     {
         // Ensure that query isn't executed before permission checking
         Assert.That(command.SpecialNumber, Is.Not.EqualTo(100));

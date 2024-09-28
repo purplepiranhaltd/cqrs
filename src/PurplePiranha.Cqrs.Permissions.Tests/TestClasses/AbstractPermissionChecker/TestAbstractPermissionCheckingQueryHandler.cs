@@ -5,7 +5,7 @@ namespace PurplePiranha.Cqrs.Permissions.Tests.TestClasses.Queries;
 
 public class TestAbstractPermissionCheckingQueryHandler : IQueryHandler<TestAbstractPermissionCheckingQuery, int>
 {
-    public async Task<Result<int>> ExecuteAsync(TestAbstractPermissionCheckingQuery query)
+    public async Task<Result<int>> ExecuteAsync(TestAbstractPermissionCheckingQuery query, CancellationToken cancellationToken = default)
     {
         if (query.IMustNotBe100 == 100)
             Assert.Fail("Query handler called before permission checking.");

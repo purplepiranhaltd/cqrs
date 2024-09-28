@@ -1,4 +1,5 @@
 ﻿using PurplePiranha.FluentResults.Results;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PurplePiranha.Cqrs.Queries;
@@ -15,5 +16,5 @@ public interface IQueryHandler<TQuery, TResult> where TQuery : IQuery<TResult>
     /// </summary>
     /// <param name="query">The query.</param>
     /// <returns></returns>
-    Task<Result<TResult>> ExecuteAsync(TQuery query);
+    Task<Result<TResult>> ExecuteAsync(TQuery query, CancellationToken cancellationToken = default);
 }

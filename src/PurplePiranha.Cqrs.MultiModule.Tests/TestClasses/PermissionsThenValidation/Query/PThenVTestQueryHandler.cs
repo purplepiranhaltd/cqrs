@@ -5,7 +5,7 @@ namespace PurplePiranha.Cqrs.Extra.Tests.TestClasses.PermissionsThenValidation.Q
 
 public class PThenVTestQueryHandler : IQueryHandler<PThenVTestQuery, int>
 {
-    public Task<Result<int>> ExecuteAsync(PThenVTestQuery query)
+    public Task<Result<int>> ExecuteAsync(PThenVTestQuery query, CancellationToken cancellationToken = default)
     {
         // Ensure that query isn't executed before permission checking
         Assert.That(query.SpecialNumber, Is.Not.EqualTo(100));
