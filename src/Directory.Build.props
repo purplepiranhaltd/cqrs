@@ -1,0 +1,6 @@
+<Project>
+	<PropertyGroup>
+		<RootNamespace>PurplePiranha.Cqrs.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+		<AssemblyName>PurplePiranha.Cqrs.$(MSBuildProjectName)</AssemblyName>
+	</PropertyGroup>
+</Project>
