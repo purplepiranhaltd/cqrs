@@ -26,7 +26,7 @@
 		<PackageReference Include="FluentValidation" Version="12.0.0" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.5" />
-		<PackageReference Include="PurplePiranha.FluentResults" Version="8.0.0" />
+		<PackageReference Include="PurplePiranha.FluentResults" Version="8.0.2" />
 	</ItemGroup>
 	
 	<ItemGroup>
