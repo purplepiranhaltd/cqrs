@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+	<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <Authors>Paul @ Purple Piranha</Authors>
@@ -23,13 +23,13 @@
   </ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="FluentValidation" Version="11.5.2" />
-		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.5.2" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-		<PackageReference Include="PurplePiranha.FluentResults" Version="2.0.1" />
+		<PackageReference Include="FluentValidation" Version="12.0.0" />
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.5" />
+		<PackageReference Include="PurplePiranha.FluentResults" Version="8.0.0" />
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
 	</ItemGroup>
 </Project>

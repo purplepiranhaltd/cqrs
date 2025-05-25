@@ -28,9 +28,9 @@ public class NotAuthorisedFailureFactoryTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
         var failureFactory = serviceProvider.GetRequiredService<NotAuthorisedFailureFactory>();
         var failure = failureFactory.GetNotAuthorisedFailure();
-        Assert.IsNotNull(failure);
-        Assert.IsInstanceOf<NotAuthorisedFailure>(failure);
-        Assert.IsNotInstanceOf<CustomNotAuthorisedFailure>(failure);
+        Assert.That(failure, Is.Not.Null);
+        Assert.That(failure, Is.InstanceOf<NotAuthorisedFailure>());
+        Assert.That(failure, Is.Not.InstanceOf<CustomNotAuthorisedFailure>());
     }
 
     [Test]
@@ -41,8 +41,8 @@ public class NotAuthorisedFailureFactoryTests
         var serviceProvider = serviceCollection.BuildServiceProvider();
         var failureFactory = serviceProvider.GetRequiredService<NotAuthorisedFailureFactory>();
         var failure = failureFactory.GetNotAuthorisedFailure();
-        Assert.IsNotNull(failure);
-        Assert.IsInstanceOf<CustomNotAuthorisedFailure>(failure);
-        Assert.IsNotInstanceOf<NotAuthorisedFailure>(failure);
+        Assert.That(failure, Is.Not.Null);
+        Assert.That(failure, Is.InstanceOf<CustomNotAuthorisedFailure>());
+        Assert.That(failure, Is.Not.InstanceOf<NotAuthorisedFailure>());
     }
 }
