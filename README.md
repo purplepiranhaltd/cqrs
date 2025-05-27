@@ -8,4 +8,4 @@ Starting with version 8 of this library the major version number will indicate t
 
 This library has been used in our own work for the last two years and is actively maintained.
 
-Usage details will be added shortly.
+Please see the [wiki](https://github.com/purplepiranhaltd/CQRS/wiki) for details on how to use the library.
